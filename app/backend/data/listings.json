@@ -10,9 +10,22 @@
     "expected_monthly_rent_eur": 850,
     "annual_operating_costs_eur": 1450,
     "neighborhood": "Lozenets",
-    "highlights": ["Metro within 600 m", "2019 construction, Act 16 issued", "Tenant pool: tech & finance professionals"],
-    "risks": ["BGN/EUR peg transition to euro adoption (Jan 2026) settled, but watch pricing in EUR", "Service charge increases in managed buildings"],
-    "data_source": "sample"
+    "highlights": [
+      "Metro within 600 m",
+      "2019 construction, Act 16 issued",
+      "Tenant pool: tech & finance professionals"
+    ],
+    "risks": [
+      "BGN/EUR peg transition to euro adoption (Jan 2026) settled, but watch pricing in EUR",
+      "Service charge increases in managed buildings"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 55,
+      "occupancy_pct": 58,
+      "note": "Lozenets is primarily a long-let district; short-let demand is moderate (business travellers)."
+    }
   },
   {
     "id": "sof-002",
@@ -25,9 +38,22 @@
     "expected_monthly_rent_eur": 650,
     "annual_operating_costs_eur": 1100,
     "neighborhood": "Center / NDK",
-    "highlights": ["Prime walkable center", "Entry price under EUR 130k", "Dual strategy: long let or short let"],
-    "risks": ["Brick building, no elevator", "Short-let regulation tightening in central Sofia"],
-    "data_source": "sample"
+    "highlights": [
+      "Prime walkable center",
+      "Entry price under EUR 130k",
+      "Dual strategy: long let or short let"
+    ],
+    "risks": [
+      "Brick building, no elevator",
+      "Short-let regulation tightening in central Sofia"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 68,
+      "occupancy_pct": 70,
+      "note": "Vitosha Blvd / NDK is the strongest short-let micro-location in Sofia."
+    }
   },
   {
     "id": "sof-003",
@@ -40,9 +66,22 @@
     "expected_monthly_rent_eur": 780,
     "annual_operating_costs_eur": 1300,
     "neighborhood": "Mladost 4",
-    "highlights": ["Highest projected gross yield in Sofia set", "Metro line 1 on the doorstep", "New build: 10-yr structural warranty"],
-    "risks": ["Off-plan completion risk - use staged payments via lawyer", "Mladost has heavy new supply pipeline"],
-    "data_source": "sample"
+    "highlights": [
+      "Highest projected gross yield in Sofia set",
+      "Metro line 1 on the doorstep",
+      "New build: 10-yr structural warranty"
+    ],
+    "risks": [
+      "Off-plan completion risk - use staged payments via lawyer",
+      "Mladost has heavy new supply pipeline"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 48,
+      "occupancy_pct": 55,
+      "note": "Business-park corridor: weekday corporate stays, weak weekends."
+    }
   },
   {
     "id": "ath-001",
@@ -55,9 +94,20 @@
     "expected_monthly_rent_eur": 1050,
     "annual_operating_costs_eur": 2100,
     "neighborhood": "Koukaki",
-    "highlights": ["Blue-chip Athens micro-location", "Renovated - no capex needed", "Deep tenant and resale market"],
-    "risks": ["New short-let licence restrictions in central Athens (registration freeze zones)", "ENFIA and municipal fees rising with zone values"],
-    "data_source": "sample"
+    "highlights": [
+      "Blue-chip Athens micro-location",
+      "Renovated - no capex needed",
+      "Deep tenant and resale market"
+    ],
+    "risks": [
+      "New short-let licence restrictions in central Athens (registration freeze zones)",
+      "ENFIA and municipal fees rising with zone values"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": false,
+      "note": "Koukaki sits in central Athens District 1 where NEW short-let (AMA) registrations are frozen until 31 Dec 2026 - a new buyer cannot legally short-let. Modelled as long let only."
+    }
   },
   {
     "id": "ath-002",
@@ -70,9 +120,22 @@
     "expected_monthly_rent_eur": 900,
     "annual_operating_costs_eur": 1800,
     "neighborhood": "Kypseli",
-    "highlights": ["Lowest price per m2 in central Athens", "Renovation upside baked into entry price", "Large units rent fast to families/sharers"],
-    "risks": ["Gentrification timeline uncertainty", "Older building (1970s) - check seismic/engineering report"],
-    "data_source": "sample"
+    "highlights": [
+      "Lowest price per m2 in central Athens",
+      "Renovation upside baked into entry price",
+      "Large units rent fast to families/sharers"
+    ],
+    "risks": [
+      "Gentrification timeline uncertainty",
+      "Older building (1970s) - check seismic/engineering report"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 62,
+      "occupancy_pct": 64,
+      "note": "Kypseli (District 6) is outside the central-Athens AMA registration freeze."
+    }
   },
   {
     "id": "ath-003",
@@ -85,9 +148,22 @@
     "expected_monthly_rent_eur": 1350,
     "annual_operating_costs_eur": 2600,
     "neighborhood": "Glyfada",
-    "highlights": ["Ellinikon project tailwind", "Premium tenant profile", "Strong resale liquidity"],
-    "risks": ["Yield compression - this is an appreciation play", "Note: Golden Visa in Attica now requires EUR 800k single asset, this does not qualify"],
-    "data_source": "sample"
+    "highlights": [
+      "Ellinikon project tailwind",
+      "Premium tenant profile",
+      "Strong resale liquidity"
+    ],
+    "risks": [
+      "Yield compression - this is an appreciation play",
+      "Note: Golden Visa in Attica now requires EUR 800k single asset, this does not qualify"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 115,
+      "occupancy_pct": 58,
+      "note": "Strong summer season on the Riviera; winter occupancy soft. Glyfada is outside the central-Athens freeze."
+    }
   },
   {
     "id": "sic-001",
@@ -100,9 +176,22 @@
     "expected_monthly_rent_eur": 580,
     "annual_operating_costs_eur": 1500,
     "neighborhood": "Palermo - La Kalsa",
-    "highlights": ["Sub-EUR 100k entry", "Italy CGT-free after 5 years of ownership", "Strong short-let season Apr-Oct"],
-    "risks": ["Older building stock - survey essential", "Palermo short-let registration (CIN code) now mandatory"],
-    "data_source": "sample"
+    "highlights": [
+      "Sub-EUR 100k entry",
+      "Italy CGT-free after 5 years of ownership",
+      "Strong short-let season Apr-Oct"
+    ],
+    "risks": [
+      "Older building stock - survey essential",
+      "Palermo short-let registration (CIN code) now mandatory"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 78,
+      "occupancy_pct": 60,
+      "note": "Apr-Oct season carries the year. CIN registration code required."
+    }
   },
   {
     "id": "sic-002",
@@ -115,9 +204,22 @@
     "expected_monthly_rent_eur": 640,
     "annual_operating_costs_eur": 1600,
     "neighborhood": "Catania - Centro",
-    "highlights": ["Year-round tenant demand (students + tech)", "Etna Valley employment growth", "Room-by-room letting upside"],
-    "risks": ["Seismic zone - verify building class", "Slower resale market than Palermo centre"],
-    "data_source": "sample"
+    "highlights": [
+      "Year-round tenant demand (students + tech)",
+      "Etna Valley employment growth",
+      "Room-by-room letting upside"
+    ],
+    "risks": [
+      "Seismic zone - verify building class",
+      "Slower resale market than Palermo centre"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 64,
+      "occupancy_pct": 58,
+      "note": "Less touristy than Palermo; steadier from university/business visitors. CIN required."
+    }
   },
   {
     "id": "sic-003",
@@ -130,8 +232,21 @@
     "expected_monthly_rent_eur": 850,
     "annual_operating_costs_eur": 1900,
     "neighborhood": "Syracuse - Ortigia",
-    "highlights": ["Premium location, UNESCO old town", "Short-let upside over modelled long-let rent", "Strong international resale audience"],
-    "risks": ["Seasonality if run as short let", "Humidity/maintenance in historic buildings"],
-    "data_source": "sample"
+    "highlights": [
+      "Premium location, UNESCO old town",
+      "Short-let upside over modelled long-let rent",
+      "Strong international resale audience"
+    ],
+    "risks": [
+      "Seasonality if run as short let",
+      "Humidity/maintenance in historic buildings"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 125,
+      "occupancy_pct": 64,
+      "note": "Premium short-let market; highest nightly rates outside Taormina. CIN required."
+    }
   }
 ]

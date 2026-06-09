@@ -11,9 +11,10 @@ async function get(path, params = {}) {
 
 export const fetchCities = () => get('/cities')
 export const fetchScenarios = () => get('/scenarios')
-export const fetchOpportunities = (city, scenario, marginalRate) =>
-  get('/opportunities', { city, scenario, marginal_rate: marginalRate })
-export const fetchFullAnalysis = (id, marginalRate) =>
-  get(`/opportunities/${id}/full-analysis`, { marginal_rate: marginalRate })
+export const fetchOpportunities = (city, scenario, marginalRate, yearsAbroad) =>
+  get('/opportunities', { city, scenario, marginal_rate: marginalRate, years_abroad: yearsAbroad })
+export const fetchFullAnalysis = (id, marginalRate, yearsAbroad) =>
+  get(`/opportunities/${id}/full-analysis`, { marginal_rate: marginalRate, years_abroad: yearsAbroad })
 export const fetchProfessionals = (city, type) =>
   get('/professionals', { city, type })
+export const fetchVetting = () => get('/vetting')

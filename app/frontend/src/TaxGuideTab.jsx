@@ -36,6 +36,8 @@ export default function TaxGuideTab() {
         <section className="card">
           <h3>Returning-resident exemptions</h3>
           <ul>
+            <li>⚠ <strong>Fewer than 6 consecutive years abroad: no exemption at all</strong> —
+              you choose between the two tracks from the day residency resumes.</li>
             <li><strong>Ordinary toshav chozer</strong> (6+ yrs abroad): foreign passive income —
               including rent — from assets bought while abroad is <strong>exempt for 5 years</strong>;
               capital gains on those assets exempt for 10 years.</li>
@@ -75,6 +77,17 @@ export default function TaxGuideTab() {
           </tr>
         </tbody>
       </table>
+
+      <h2>Short lets: an extra Israeli wrinkle</h2>
+      <p>
+        An actively-managed short-let operation (Airbnb-style) risks being classified by the ITA
+        as <strong>business income</strong>, which would deny the 15% flat track and tax profits at
+        marginal rates (with a foreign tax credit). Running it through a local management company
+        strengthens the passive characterisation. Locally: Greece requires an AMA number (new
+        registrations frozen in central Athens Districts 1–3 until end-2026), Italy requires a CIN
+        code (21% first property, 26% second, business status from the third), Bulgaria requires
+        municipal categorisation as tourist accommodation.
+      </p>
 
       <h2>Capital gains when you sell, as an Israeli resident</h2>
       <p>

@@ -1,0 +1,92 @@
+{
+  "intro": "Names on any list — including ours — are starting points, not endorsements. The reliable path is: verify credentials in the official registry, test independence, and cross-check in buyer communities where recommendations come from people who actually transacted.",
+  "universal_checklist": [
+    "Independence test: your lawyer must be engaged and paid by YOU only — never recommended by, sharing fees with, or office-sharing with the selling agent or developer.",
+    "Ask for 2-3 references from past foreign buyers and actually call one.",
+    "Confirm professional-liability (indemnity) insurance and its coverage amount.",
+    "Get the fee structure in writing before engaging: flat fee vs % of purchase price (% fees create an incentive for a higher price).",
+    "Ask what they check in due diligence: title chain, encumbrances/mortgages, building permits & legalization, seller's tax and utility debts, cadastral conformity.",
+    "Funds should move through a client/escrow account or notary account — never to a personal account.",
+    "Red flag: anyone who pressures you to skip a survey, sign quickly, or under-declare the price in the deed (still common in all three markets and creates a capital-gains time bomb for YOU at resale)."
+  ],
+  "countries": [
+    {
+      "country": "Bulgaria (Sofia)",
+      "lawyer_registry": {
+        "name": "Sofia Bar Association / Supreme Bar Council register",
+        "url": "https://www.sak-sas.bg/en",
+        "how": "Every practising advokat must be registered with a bar association. Verify by name; cross-check EU-wide at the European e-Justice 'Find a Lawyer' portal."
+      },
+      "realtor_registry": {
+        "name": "No licensing regime — NSNI membership is the only signal",
+        "url": "https://nsni.bg/",
+        "how": "Bulgaria does NOT license estate agents; anyone can practise. Membership in the National Real Property Association (NSNI) and adherence to its ethics code is the strongest available proxy. Treat unregistered solo agents with extra caution."
+      },
+      "local_red_flags": [
+        "Agents commonly represent BOTH sides and take commission from both — ask explicitly who pays them.",
+        "Off-plan purchases: insist on staged payments tied to construction milestones (Act 14/15/16) held via your lawyer.",
+        "Verify the building has Act 16 (permission of use) — without it you cannot legally occupy or insure."
+      ],
+      "community_sources": [
+        {"name": "Foreigners in Sofia & Friends (Facebook)", "url": "https://www.facebook.com/groups/foreignersinsofia/", "note": "Largest expat group; search past threads for lawyer/agent names before asking."},
+        {"name": "r/bulgaria — property threads", "url": "https://www.reddit.com/r/bulgaria/", "note": "Honest, marketing-free takes on agencies and districts."},
+        {"name": "InterNations Sofia", "url": "https://www.internations.org/sofia-expats", "note": "Expat referrals; members are identifiable, reducing astroturfing."},
+        {"name": "ישראלים בבולגריה (Israelis in Bulgaria, Facebook)", "url": "https://www.facebook.com/search/groups/?q=%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%9D%20%D7%91%D7%91%D7%95%D7%9C%D7%92%D7%A8%D7%99%D7%94", "note": "Hebrew-speaking buyer experiences, incl. tax-treaty practicalities."}
+      ]
+    },
+    {
+      "country": "Italy (Sicily)",
+      "lawyer_registry": {
+        "name": "Ordine degli Avvocati (Palermo / Catania) — national CNF register",
+        "url": "https://albosfera.cnf.it/",
+        "how": "Search the national bar register (albo) by name; each avvocato must appear under their local Ordine. For property deals you will also use a notaio (verify at notariato.it) — but the notary is neutral, NOT your advocate; hire your own lawyer too."
+      },
+      "realtor_registry": {
+        "name": "Chamber of Commerce — agente immobiliare licence",
+        "url": "https://www.registroimprese.it/en/home",
+        "how": "Italian estate agents must be licensed and registered with the Chamber of Commerce (former ruolo). Ask for their REA number and verify. Unlicensed intermediation is illegal and voids their commission claim."
+      },
+      "local_red_flags": [
+        "Cadastral non-conformity is endemic in Sicilian historic stock — commission an independent geometra survey before any compromesso.",
+        "The compromesso (preliminary contract) is binding; never sign without your lawyer's review.",
+        "Check for abusivismo (unpermitted works) — amnesty paperwork must be complete or the sale can be void."
+      ],
+      "community_sources": [
+        {"name": "Expats in Sicily (Facebook)", "url": "https://www.facebook.com/groups/expatsinsicily/", "note": "Active group with frequent 'recommend a lawyer/geometra in Palermo/Catania' threads."},
+        {"name": "r/ItalyExpat + r/sicilia", "url": "https://www.reddit.com/r/ItalyExpat/", "note": "Unfiltered purchase war stories; search 'notaio', 'geometra', 'Sicily'."},
+        {"name": "Times of Sicily / expat blogs comment sections", "url": "https://www.timesofsicily.com/", "note": "Long-running English-language Sicily community."},
+        {"name": "ישראלים באיטליה (Israelis in Italy, Facebook)", "url": "https://www.facebook.com/search/groups/?q=%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%9D%20%D7%91%D7%90%D7%99%D7%98%D7%9C%D7%99%D7%94", "note": "Hebrew-speaking community incl. Israeli-Italian tax questions."}
+      ]
+    },
+    {
+      "country": "Greece (Athens)",
+      "lawyer_registry": {
+        "name": "Athens Bar Association (DSA)",
+        "url": "https://www.dsa.gr/",
+        "how": "Verify membership by name; the Plenary of Greek Bar Associations (olomeleia.gr) lists all regional bars. EU-wide cross-check via the e-Justice 'Find a Lawyer' portal."
+      },
+      "realtor_registry": {
+        "name": "Certified estate agent (μεσίτης) — GEMI registration",
+        "url": "https://www.businessportal.gr/",
+        "how": "Greek estate agents must be registered in the General Commercial Registry (GEMI) with a real-estate activity code. Ask for the GEMI number; membership of SEK (Hellenic Realtors' Association) is an additional signal."
+      },
+      "local_red_flags": [
+        "Verify the property's ENFIA certificate and that the seller owes no property tax — unpaid ENFIA blocks transfer.",
+        "Check the building permit and the 'tactopoiisi' (legalization of unpermitted areas) status — common in older Athens stock.",
+        "Short-let plans: confirm the address is OUTSIDE central Athens Districts 1-3, where new AMA registrations are frozen until end-2026.",
+        "Forest/archaeology encumbrances can apply even in urban Attica — your lawyer must pull the land-registry (ktimatologio) sheet."
+      ],
+      "community_sources": [
+        {"name": "Expats in Athens (Facebook)", "url": "https://www.facebook.com/groups/expatsinathens/", "note": "Frequent first-hand lawyer/agent recommendations with follow-up comments."},
+        {"name": "r/greece — buying-property threads", "url": "https://www.reddit.com/r/greece/", "note": "Search 'buying apartment Athens lawyer' for candid threads."},
+        {"name": "InterNations Athens", "url": "https://www.internations.org/athens-expats", "note": "Identifiable-member referrals."},
+        {"name": "ישראלים ביוון (Israelis in Greece, Facebook)", "url": "https://www.facebook.com/search/groups/?q=%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%9D%20%D7%91%D7%99%D7%95%D7%95%D7%9F", "note": "Hebrew-speaking buyers; useful on Israel-Greece treaty practice and Hebrew-speaking lawyers in Athens."}
+      ]
+    }
+  ],
+  "eu_wide_lawyer_check": {
+    "name": "European e-Justice 'Find a Lawyer' portal",
+    "url": "https://webgate.ec.europa.eu/fal/index.html",
+    "note": "Searches the official national bar registers of all three countries from one place."
+  }
+}

@@ -32,6 +32,8 @@ Approximate combined effective rates on rental income after the move:
 
 ## 3. Returning-resident reliefs — the biggest planning lever
 
+- **Fewer than 6 consecutive years abroad: no exemption.** Israeli tax applies from the day
+  residency resumes, under whichever of the two tracks is cheaper that year.
 - **Ordinary returning resident (toshav chozer)** — abroad ≥6 consecutive years:
   foreign **passive** income (rent, interest, dividends) from assets **acquired while
   non-resident** is **exempt for 5 years**; capital gains on those assets exempt for **10 years**.
@@ -65,13 +67,29 @@ after the window, the gain is apportioned linearly between exempt and taxable ho
 | Annual holding tax | ~0.15–0.45% municipal | IMU ~0.4–1.06% of cadastral value | ENFIA €2–16.2/m² + municipal fee |
 | Purchase costs (approx.) | ~7% | ~12% (9% registration tax on second homes) | ~10% (3.09% transfer tax + fees) |
 
-## 6. How this is modelled in the app
+## 6. Short lets — extra rules on both sides
+
+- **Israel:** an actively-managed short-let operation risks classification as **business
+  income**, denying the 15% flat track and taxing profits at marginal rates (with FTC). A
+  local management company strengthens the passive characterisation.
+- **Greece:** AMA registration mandatory; **new AMA registrations frozen in central Athens
+  Districts 1–3 (incl. Plaka, Koukaki, Kolonaki) until 31 Dec 2026** — a new buyer there
+  cannot legally short-let. 3+ properties = professional status with 13% VAT.
+- **Italy:** national CIN code mandatory; cedolare secca 21% on the first short-let property,
+  26% from the second, business treatment (ordinary tax + VAT) from the third.
+- **Bulgaria:** municipal categorisation as tourist accommodation required; income taxed at
+  the 10% flat rate unless it rises to a business activity.
+
+## 7. How this is modelled in the app
 
 The financial engine (`app/backend/tax_engine.py`) computes after-tax yield and annual cash
 flow per listing under four scenarios — `abroad`, `israel_15_track`, `israel_marginal_track`,
-`returning_resident` — plus an exit-CGT estimate. Assumptions: depreciation 4%/yr on a 60%
-building component; marginal rate configurable (default 47%); surtax not modelled (depends on
-total income).
+`returning_resident` — across two rent strategies (long let, and short let where legally
+available), plus an exit-CGT estimate. The returning-resident scenario is gated on a
+`years_abroad` input (<6 years = not eligible; falls back to the cheaper regular track).
+Assumptions: depreciation 4%/yr on a 60% building component; marginal rate configurable
+(default 47%); short-let platform/management costs 22% of revenue; surtax not modelled
+(depends on total income).
 
 ### Sources
 - [PwC Tax Summaries — Israel: income determination](https://taxsummaries.pwc.com/israel/individual/income-determination) and [foreign tax relief](https://taxsummaries.pwc.com/israel/individual/foreign-tax-relief-and-tax-treaties)

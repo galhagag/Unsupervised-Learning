@@ -17,6 +17,7 @@ import tax_engine
 DATA_DIR = Path(__file__).parent / "data"
 LISTINGS = json.loads((DATA_DIR / "listings.json").read_text())
 PROFESSIONALS = json.loads((DATA_DIR / "professionals.json").read_text())
+VETTING = json.loads((DATA_DIR / "vetting.json").read_text())
 
 CITIES = ["Sofia", "Sicily", "Athens"]
 
@@ -42,8 +43,13 @@ def scenarios():
 def opportunities(city: str | None = Query(None),
                   scenario: str = Query("abroad"),
                   marginal_rate: float = Query(0.47, ge=0.10, le=0.50),
+                  years_abroad: int = Query(5, ge=0, le=40),
                   sort: str = Query("after_tax_yield")):
-    """Listings ranked by after-tax yield under the chosen tax scenario."""
+    """Listings ranked by after-tax yield under the chosen tax scenario.
+
+    Returns long-let financials plus a short-let analysis side by side
+    (null where short letting is not legally available to a new buyer).
+    """
     items = [l for l in LISTINGS if not city or l["city"].lower() == city.lower()]
     if city and not items:
         raise HTTPException(404, f"Unknown city '{city}'. Choose from {CITIES}.")
@@ -51,10 +57,17 @@ def opportunities(city: str | None = Query(None),
     results = []
     for listing in items:
         try:
-            analysis = tax_engine.analyze(listing, scenario, marginal_rate)
+            long_let = tax_engine.analyze(listing, scenario, marginal_rate,
+                                          years_abroad=years_abroad)
+            short_let = None
+            if tax_engine.short_let_allowed(listing):
+                short_let = tax_engine.analyze(listing, scenario, marginal_rate,
+                                               rent_strategy="short_let",
+                                               years_abroad=years_abroad)
         except ValueError as e:
             raise HTTPException(400, str(e))
-        results.append({**listing, "financials": analysis})
+        results.append({**listing, "financials": long_let,
+                        "financials_short_let": short_let})
 
     key = {
         "after_tax_yield": lambda r: r["financials"]["after_tax_yield_pct"],
@@ -69,13 +82,21 @@ def opportunities(city: str | None = Query(None),
 
 @app.get("/api/opportunities/{listing_id}/full-analysis")
 def full_analysis(listing_id: str,
-                  marginal_rate: float = Query(0.47, ge=0.10, le=0.50)):
-    """All four tax scenarios side by side for one listing."""
+                  marginal_rate: float = Query(0.47, ge=0.10, le=0.50),
+                  years_abroad: int = Query(5, ge=0, le=40)):
+    """All four tax scenarios x both rent strategies for one listing."""
     listing = next((l for l in LISTINGS if l["id"] == listing_id), None)
     if listing is None:
         raise HTTPException(404, f"No listing '{listing_id}'.")
     return {"listing": listing,
-            "scenarios": tax_engine.analyze_all_scenarios(listing, marginal_rate)}
+            "strategies": tax_engine.analyze_all_scenarios(
+                listing, marginal_rate, years_abroad=years_abroad)}
+
+
+@app.get("/api/vetting")
+def vetting():
+    """Per-country vetting toolkit: checklists, registries, community sources."""
+    return VETTING
 
 
 @app.get("/api/professionals")

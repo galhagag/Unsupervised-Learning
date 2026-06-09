@@ -8,7 +8,12 @@ Italy (Sicily) or Greece under four investor scenarios:
   3. israel_marginal_track   - Israeli resident, marginal-rate track with
                                foreign tax credit
   4. returning_resident      - toshav chozer / toshav chozer vatik exemption
-                               window (local tax only)
+                               window (local tax only); requires 6+ consecutive
+                               years abroad - gated by the years_abroad input
+
+Each listing can be analysed under two rent strategies: a conservative
+long let, or a short let (nightly rate x occupancy, with platform/management
+costs and per-country licensing constraints).
 
 All figures are annual EUR amounts unless stated otherwise. Rates encode the
 law as of mid-2026 and are kept in one place so they are easy to audit and
@@ -100,6 +105,32 @@ ISRAEL = {
                    "depends on the investor's total income.",
 }
 
+# Short-let economics: platform host fees + extra management/cleaning/
+# utilities, as a share of short-let gross revenue.
+SHORT_LET_COST_RATIO = 0.22
+
+SHORT_LET_COUNTRY_NOTES = {
+    "bulgaria": "Short lets require municipal categorisation as tourist "
+                "accommodation. Income taxed like rental income at the 10% "
+                "flat rate unless it rises to a business activity.",
+    "italy": "National CIN registration code mandatory. Cedolare secca 21% "
+             "applies to the first short-let property, 26% from the second, "
+             "and from the third it is a business (ordinary tax + VAT).",
+    "greece": "AMA registration number mandatory on every platform listing. "
+              "NEW AMA registrations are frozen in central Athens districts "
+              "1-3 (incl. Plaka, Koukaki, Kolonaki) until 31 Dec 2026 - a "
+              "new buyer there cannot legally short-let. 3+ properties = "
+              "professional status with 13% VAT.",
+}
+
+ISRAEL_SHORT_LET_NOTE = (
+    "Israeli angle: an actively-managed short-let operation may be "
+    "classified as BUSINESS income by the ITA, which would deny the 15% "
+    "flat track and tax profits at marginal rates (with foreign tax "
+    "credit). Using a local management company strengthens the passive "
+    "characterisation."
+)
+
 SCENARIOS = {
     "abroad": {
         "label": "Living abroad (not an Israeli tax resident)",
@@ -128,7 +159,9 @@ SCENARIOS = {
                        "acquired while abroad is exempt for 5 years. Veteran "
                        "returning resident (10+ years abroad): ALL foreign "
                        "income and gains exempt for 10 years. During the "
-                       "window only local tax applies.",
+                       "window only local tax applies. Requires 6+ "
+                       "consecutive years abroad - if not eligible, the "
+                       "analysis falls back to the cheaper regular track.",
     },
 }
 
@@ -173,7 +206,8 @@ def _israeli_marginal_track(net_income: float, local_tax: float,
 
 
 def _exit_cgt(country: dict, price: float, assumed_gain_pct: float,
-              scenario: str, holding_years: int = 6) -> dict:
+              scenario: str, holding_years: int = 6,
+              years_abroad: int = 5) -> dict:
     gain = price * assumed_gain_pct
     local_rate = country["cgt_rate"]
     if country.get("cgt_exempt_after_years") and holding_years > country["cgt_exempt_after_years"]:
@@ -183,7 +217,7 @@ def _exit_cgt(country: dict, price: float, assumed_gain_pct: float,
     if scenario == "abroad":
         israeli_cgt = 0.0
         note = "Israel does not tax the gain while you are a non-resident."
-    elif scenario == "returning_resident":
+    elif scenario == "returning_resident" and years_abroad >= 6:
         israeli_cgt = 0.0
         note = ("Veteran returning resident: gain exempt if sold within the "
                 "10-year window; after it, linear apportionment taxes only "
@@ -207,10 +241,43 @@ def _exit_cgt(country: dict, price: float, assumed_gain_pct: float,
     }
 
 
+def short_let_allowed(listing: dict) -> bool:
+    return bool(listing.get("short_let", {}).get("allowed"))
+
+
+def _rent_basis(listing: dict, rent_strategy: str) -> tuple[float, float, list]:
+    """Return (gross_rent, opex, strategy_notes) for the chosen strategy."""
+    if rent_strategy == "long_let":
+        return (listing["expected_monthly_rent_eur"] * 12,
+                listing["annual_operating_costs_eur"], [])
+    if rent_strategy != "short_let":
+        raise ValueError(f"Unknown rent_strategy '{rent_strategy}'. "
+                         "Valid: ['long_let', 'short_let']")
+    sl = listing.get("short_let") or {}
+    if not sl.get("allowed"):
+        raise ValueError(f"Short let not available for {listing['id']}: "
+                         f"{sl.get('note', 'not permitted/modelled')}")
+    gross = sl["nightly_rate_eur"] * 365 * sl["occupancy_pct"] / 100
+    opex = (listing["annual_operating_costs_eur"]
+            + gross * SHORT_LET_COST_RATIO)
+    notes = [
+        f"Short let modelled at EUR {sl['nightly_rate_eur']}/night x "
+        f"{sl['occupancy_pct']}% occupancy; platform + management + extra "
+        f"running costs at {SHORT_LET_COST_RATIO:.0%} of revenue.",
+        SHORT_LET_COUNTRY_NOTES[listing["country"]],
+        ISRAEL_SHORT_LET_NOTE,
+    ]
+    if sl.get("note"):
+        notes.insert(1, sl["note"])
+    return gross, opex, notes
+
+
 def analyze(listing: dict, scenario: str = "abroad",
             marginal_rate: float | None = None,
             assumed_gain_pct: float = 0.25,
-            holding_years: int = 6) -> dict:
+            holding_years: int = 6,
+            rent_strategy: str = "long_let",
+            years_abroad: int = 5) -> dict:
     """Run the full financial analysis for one listing under one scenario."""
     if scenario not in SCENARIOS:
         raise ValueError(f"Unknown scenario '{scenario}'. "
@@ -220,12 +287,11 @@ def analyze(listing: dict, scenario: str = "abroad",
 
     price = listing["price_eur"]
     all_in_cost = price * (1 + country["buy_costs_pct"])
-    gross_rent = listing["expected_monthly_rent_eur"] * 12
-    opex = listing["annual_operating_costs_eur"]
+    gross_rent, opex, strategy_notes = _rent_basis(listing, rent_strategy)
     net_income = gross_rent - opex
 
     local_tax = country["rental_tax"](gross_rent, net_income)
-    notes = [country["rental_tax_note"]]
+    notes = [country["rental_tax_note"], *strategy_notes]
 
     israeli_tax = 0.0
     if scenario == "israel_15_track":
@@ -237,11 +303,25 @@ def analyze(listing: dict, scenario: str = "abroad",
         notes.append(note)
         notes.append(ISRAEL["surtax_note"])
     elif scenario == "returning_resident":
-        notes.append("Exemption window: 5 years (ordinary, passive income "
-                     "from assets acquired while abroad) or 10 years "
-                     "(veteran, all foreign income). Residents from "
-                     "1 Jan 2026 must REPORT foreign income/assets from day "
-                     "one even while exempt (Amendment 272).")
+        if years_abroad < 6:
+            # Not eligible: fall back to the cheaper of the two tracks.
+            flat, _ = _israeli_flat_track(gross_rent, price)
+            marg, _ = _israeli_marginal_track(net_income, local_tax,
+                                              marginal_rate, price)
+            israeli_tax = min(flat, marg)
+            notes.append(f"NOT ELIGIBLE with {years_abroad} years abroad - "
+                         "the exemption requires 6+ consecutive years of "
+                         "foreign residency. Showing the cheaper of the two "
+                         "regular tracks instead "
+                         f"(EUR {israeli_tax:,.0f}/yr).")
+        else:
+            window = 10 if years_abroad >= 10 else 5
+            notes.append(f"Eligible: {years_abroad} years abroad gives a "
+                         f"{window}-year exemption window "
+                         f"({'veteran - all foreign income' if window == 10 else 'ordinary - passive income from assets acquired while abroad'}). "
+                         "Residents from 1 Jan 2026 must REPORT foreign "
+                         "income/assets from day one even while exempt "
+                         "(Amendment 272).")
     elif scenario == "abroad":
         notes.append("No Israeli tax while you are a foreign tax resident; "
                      "watch the residency tests (183-day / centre-of-life) "
@@ -261,11 +341,12 @@ def analyze(listing: dict, scenario: str = "abroad",
         after_tax_yield_pct=round(after_tax / all_in_cost * 100, 2),
         effective_tax_rate_pct=round(total_tax / gross_rent * 100, 1),
         exit_cgt_estimate=_exit_cgt(country, price, assumed_gain_pct,
-                                    scenario, holding_years),
+                                    scenario, holding_years, years_abroad),
         notes=notes,
     )
     return {
         "scenario": SCENARIOS[scenario] | {"id": scenario},
+        "rent_strategy": rent_strategy,
         "all_in_acquisition_cost": round(all_in_cost),
         "buy_costs_pct": country["buy_costs_pct"] * 100,
         "gross_yield_pct": round(gross_rent / price * 100, 2),
@@ -274,5 +355,17 @@ def analyze(listing: dict, scenario: str = "abroad",
     }
 
 
-def analyze_all_scenarios(listing: dict, marginal_rate: float | None = None) -> dict:
-    return {s: analyze(listing, s, marginal_rate) for s in SCENARIOS}
+def analyze_all_scenarios(listing: dict, marginal_rate: float | None = None,
+                          years_abroad: int = 5) -> dict:
+    """All scenarios x both rent strategies (short let only where allowed)."""
+    out = {}
+    for strategy in ("long_let", "short_let"):
+        if strategy == "short_let" and not short_let_allowed(listing):
+            out[strategy] = None
+            continue
+        out[strategy] = {
+            s: analyze(listing, s, marginal_rate, rent_strategy=strategy,
+                       years_abroad=years_abroad)
+            for s in SCENARIOS
+        }
+    return out
