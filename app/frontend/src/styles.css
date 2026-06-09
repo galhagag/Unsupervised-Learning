@@ -1,0 +1,76 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --ink: #1c2733;
+  --muted: #5b6b7b;
+  --accent: #0f6fde;
+  --accent-soft: #e7f0fd;
+  --good: #0a7d4f;
+  --warn: #9a6700;
+  --border: #e2e7ee;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--ink); }
+.app { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+
+header h1 { margin: 0 0 4px; font-size: 1.7rem; }
+.subtitle { margin: 0 0 18px; color: var(--muted); }
+
+.tabs { display: flex; gap: 8px; border-bottom: 2px solid var(--border); }
+.tab { border: none; background: none; padding: 10px 16px; font-size: 1rem; cursor: pointer; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin: 18px 0 6px; }
+.city-filter { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--border); background: var(--card); border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 0.9rem; }
+.chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.scenario-picker { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.scenario-picker select { padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.92rem; max-width: 420px; }
+.rate-input input { width: 56px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; margin: 0 4px 0 8px; }
+.scenario-desc { color: var(--muted); margin: 8px 0 16px; max-width: 880px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; margin-top: 14px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.card h3 { margin: 10px 0 8px; font-size: 1.08rem; }
+.card-head { display: flex; justify-content: space-between; align-items: center; }
+.city-pill { background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 3px 10px; font-size: 0.8rem; font-weight: 600; }
+.role-pill { border-radius: 999px; padding: 3px 10px; font-size: 0.8rem; font-weight: 600; text-transform: capitalize; }
+.role-pill.lawyer { background: #f3e8fd; color: #7a36c9; }
+.role-pill.realtor { background: #e6f6ee; color: var(--good); }
+.price { font-weight: 700; font-size: 1.05rem; }
+.overview { color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+
+.highlights { list-style: none; padding: 0; margin: 8px 0; font-size: 0.87rem; }
+.highlights li { margin: 3px 0; color: var(--good); }
+.highlights li.risk { color: var(--warn); }
+
+.fin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.stat { background: var(--bg); border-radius: 8px; padding: 8px; }
+.stat.strong { background: var(--accent-soft); }
+.stat-label { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+.stat-value { font-weight: 700; font-size: 0.92rem; }
+
+details { margin: 8px 0; font-size: 0.88rem; }
+details summary { cursor: pointer; color: var(--accent); }
+.note { color: var(--muted); font-size: 0.82rem; }
+
+.compare-btn { margin-top: 8px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 9px 14px; cursor: pointer; font-size: 0.9rem; }
+.compare-btn:hover { filter: brightness(1.08); }
+
+table.compare { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.87rem; }
+table.compare th, table.compare td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+table.compare th { color: var(--muted); font-weight: 600; }
+
+.methodology { background: #fff8e6; border: 1px solid #f0e0b0; border-radius: 10px; padding: 14px 16px; margin: 16px 0; font-size: 0.92rem; line-height: 1.5; }
+.pro-card a { color: var(--accent); font-size: 0.9rem; }
+
+.tax-guide { max-width: 980px; }
+.tax-guide h2 { margin-top: 28px; font-size: 1.25rem; }
+.tax-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.tax-cards .card h3 { margin-top: 0; }
+.tax-cards .card ul { padding-left: 18px; font-size: 0.9rem; line-height: 1.55; }
+
+.error { color: #b3261e; }
+footer { margin-top: 40px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--border); padding-top: 14px; }
