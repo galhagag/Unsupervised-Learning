@@ -1,6 +1,14 @@
 # Relocation Investment Explorer — Product Spec & Enhancement Proposal
 
-**Version:** 1.0 (as built, June 2026) · **Branch:** `claude/israel-relocation-investment-app-60k8jj` (PR #1)
+**Version:** 1.1 (lifecycle build, June 2026) · **Branch:** `claude/israel-relocation-investment-app-60k8jj` (PR #1)
+
+> **v1.1 status:** all 15 proposed enhancements in Part 2 are now built. The app
+> covers the full lifecycle — find → decide → acquire → operate → exit. New
+> backend modules: `projection.py` (hold-period IRR/NPV), `recommend.py`
+> (best-pick), `store.py` (profile/deals/properties/ledger), `insights.py`
+> (comparables/FX/alerts). New data: `acquisition_playbooks.json`,
+> `obligations.json`. New tabs: Best Pick, Acquire, Portfolio, plus a persistent
+> profile bar. 53 tests passing.
 
 ## Mission
 

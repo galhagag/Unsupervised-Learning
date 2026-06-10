@@ -9,13 +9,17 @@ import json
 import time
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 import history
+import insights
+import projection
+import recommend
 import scoring
 import scrapers
+import store
 import tax_engine
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -24,7 +28,13 @@ PROFESSIONALS = json.loads((DATA_DIR / "professionals.json").read_text())
 VETTING = json.loads((DATA_DIR / "vetting.json").read_text())
 RESEARCHED = json.loads((DATA_DIR / "researched_listings.json").read_text())
 AREAS = json.loads((DATA_DIR / "areas.json").read_text())
+PLAYBOOKS = json.loads((DATA_DIR / "acquisition_playbooks.json").read_text())
+OBLIGATIONS = json.loads((DATA_DIR / "obligations.json").read_text())
 LIVE_FILE = DATA_DIR / "live_listings.json"
+
+
+def _listing_by_id(listing_id: str) -> dict | None:
+    return next((l for l in _all_listings("all") if l["id"] == listing_id), None)
 
 
 def _live() -> dict:
@@ -257,6 +267,231 @@ def professionals(city: str | None = Query(None),
             "disclaimer": PROFESSIONALS["disclaimer"],
             "count": len(items),
             "results": items}
+
+
+# ---- Phase 1: profile, projection, recommendation, comparison ------------
+
+@app.get("/api/profile")
+def get_profile():
+    return store.get_profile()
+
+
+@app.put("/api/profile")
+def put_profile(patch: dict = Body(...)):
+    return store.save_profile(patch)
+
+
+def _assumptions_from_profile(listing: dict, overrides: dict | None = None) -> projection.ProfileAssumptions:
+    prof = {**store.get_profile(), **(overrides or {})}
+    return recommend._profile_to_assumptions(prof, listing)
+
+
+@app.get("/api/opportunities/{listing_id}/projection")
+def listing_projection(listing_id: str,
+                       rent_pct: float | None = Query(None),
+                       vacancy_extra_months: float | None = Query(None),
+                       rate_bump_pp: float | None = Query(None)):
+    """10-year hold-period projection (IRR/NPV/profit) using the saved
+    profile, with optional sensitivity stresses."""
+    listing = _listing_by_id(listing_id)
+    if not listing:
+        raise HTTPException(404, f"No listing '{listing_id}'.")
+    prof = store.get_profile()
+    # Sensitivity stresses (Phase 1 #5).
+    if rent_pct is not None:
+        prof["rent_strategy"] = prof.get("rent_strategy", "long_let")
+    overrides = {}
+    if vacancy_extra_months is not None:
+        overrides["vacancy_pct"] = prof.get("vacancy_pct", 5.0) + vacancy_extra_months / 12 * 100
+    if rate_bump_pp is not None and prof.get("ltv", 0):
+        overrides["mortgage_rate"] = prof.get("mortgage_rate", 0.045) + rate_bump_pp / 100
+    assumptions = recommend._profile_to_assumptions({**prof, **overrides}, listing)
+    if rent_pct is not None:
+        # Apply a rent haircut by scaling the listing's base rent.
+        listing = dict(listing,
+                       expected_monthly_rent_eur=listing["expected_monthly_rent_eur"] * (1 + rent_pct / 100))
+        if listing.get("short_let", {}).get("allowed"):
+            sl = dict(listing["short_let"])
+            sl["nightly_rate_eur"] = sl["nightly_rate_eur"] * (1 + rent_pct / 100)
+            listing["short_let"] = sl
+    return projection.project(listing, assumptions)
+
+
+@app.get("/api/recommendation")
+def recommendation(city: str | None = Query(None),
+                   source: str = Query("all", pattern="^(all|sample|researched|live)$")):
+    """Best-pick recommendation across the pool using the saved profile."""
+    closed = history.closed_ids()
+    pool = [l for l in _all_listings(source) if l["id"] not in closed
+            and (not city or l["city"].lower() == city.lower())]
+    return recommend.recommend(pool, store.get_profile())
+
+
+@app.post("/api/compare")
+def compare(ids: list[str] = Body(..., embed=True)):
+    """Side-by-side metrics for 2-4 pinned listings."""
+    prof = store.get_profile()
+    out = []
+    for lid in ids[:4]:
+        listing = _listing_by_id(lid)
+        if not listing:
+            continue
+        proj = projection.project(listing, recommend._profile_to_assumptions(prof, listing))
+        out.append({"listing": listing, "score": scoring.score(listing),
+                    "projection": proj,
+                    "comparables": insights.comparables(listing, _all_listings("all"))})
+    return {"count": len(out), "results": out}
+
+
+@app.get("/api/opportunities/{listing_id}/memo")
+def investment_memo(listing_id: str):
+    """One-page investment memo (markdown) for a listing."""
+    listing = _listing_by_id(listing_id)
+    if not listing:
+        raise HTTPException(404, f"No listing '{listing_id}'.")
+    prof = store.get_profile()
+    proj = projection.project(listing, recommend._profile_to_assumptions(prof, listing))
+    sc = scoring.score(listing)
+    comps = insights.comparables(listing, _all_listings("all"))
+    return {"listing_id": listing_id,
+            "markdown": _render_memo(listing, sc, proj, comps, prof)}
+
+
+def _render_memo(listing, sc, proj, comps, prof) -> str:
+    m = proj["metrics"]
+    eur = lambda n: f"EUR {n:,}" if n is not None else "n/a"
+    lines = [
+        f"# Investment memo — {listing['title']}",
+        f"\n**{listing['city']} · {eur(listing['price_eur'])} · "
+        f"{listing.get('size_m2','?')} m² · {eur(round(listing['price_eur']/listing['size_m2']))}/m²**",
+        f"\nScore **{sc['grade']} ({sc['total']}/100)** · Area: {sc['area'] or 'n/a'}"
+        f" — {sc['area_verdict'] or ''}",
+        f"\n## Overview\n{listing['overview']}",
+        "\n## Hold-period projection ({}y, move-back year {})".format(
+            prof.get("hold_years", 10), prof.get("move_back_year", "—")),
+        f"- IRR: **{m['irr_pct']}%** · NPV: {eur(m['npv'])} · Equity multiple: {m['equity_multiple']}",
+        f"- Total after-tax profit: **{eur(m['total_after_tax_profit'])}** on {eur(proj['equity_invested'])} equity",
+        f"- Avg annual cash flow: {eur(m['avg_annual_cash_flow'])}",
+        f"- Exit: sale {eur(proj['exit']['sale_value'])}, local CGT {eur(proj['exit']['local_cgt'])}, "
+        f"Israeli CGT {eur(proj['exit']['israeli_cgt'])}, net {eur(proj['exit']['net_sale_proceeds'])}",
+        f"\n## Market position\n- {comps.get('verdict','n/a')} at {eur(comps.get('target_eur_m2'))}/m² "
+        f"(area median {eur(comps.get('median_eur_m2'))}/m², {comps.get('peer_count',0)} comps)",
+        "\n## Milestones\n" + "\n".join(f"- {ms}" for ms in proj["milestones"]),
+        "\n## Highlights\n" + "\n".join(f"- {h}" for h in listing.get("highlights", [])),
+        "\n## Risks\n" + "\n".join(f"- {r}" for r in listing.get("risks", [])),
+    ]
+    if listing.get("listing_url"):
+        lines.append(f"\n[Original listing]({listing['listing_url']})")
+    lines.append("\n---\n*Decision-support modelling, not investment or tax "
+                 "advice. Confirm with your lawyer and an Israeli CPA.*")
+    return "\n".join(lines)
+
+
+# ---- Phase 2: acquisition playbooks & deal tracker -----------------------
+
+@app.get("/api/playbooks/{country}")
+def playbook(country: str):
+    pb = PLAYBOOKS["countries"].get(country.lower())
+    if not pb:
+        raise HTTPException(404, f"No playbook for '{country}'. "
+                            f"Have: {list(PLAYBOOKS['countries'])}.")
+    return {"disclaimer": PLAYBOOKS["disclaimer"], **pb}
+
+
+@app.get("/api/deals")
+def deals():
+    return {"results": store.list_deals()}
+
+
+@app.post("/api/deals")
+def create_deal(listing_id: str = Body(..., embed=True)):
+    listing = _listing_by_id(listing_id)
+    if not listing:
+        raise HTTPException(404, f"No listing '{listing_id}'.")
+    return store.create_deal(listing)
+
+
+@app.get("/api/deals/{deal_id}")
+def deal(deal_id: int):
+    d = store.get_deal(deal_id)
+    if not d:
+        raise HTTPException(404, f"No deal {deal_id}.")
+    d["playbook"] = PLAYBOOKS["countries"].get(d["country"], {})
+    return d
+
+
+@app.put("/api/deals/{deal_id}/stages/{stage_key}")
+def update_stage(deal_id: int, stage_key: str, patch: dict = Body(...)):
+    d = store.update_deal_stage(deal_id, stage_key, patch.get("done"),
+                                patch.get("note"), patch.get("cost_eur"))
+    if not d:
+        raise HTTPException(404, f"No deal {deal_id}.")
+    return d
+
+
+@app.put("/api/deals/{deal_id}/status")
+def deal_status(deal_id: int, status: str = Query(pattern="^(active|completed|abandoned)$")):
+    d = store.set_deal_status(deal_id, status)
+    if not d:
+        raise HTTPException(404, f"No deal {deal_id}.")
+    return d
+
+
+# ---- Phase 3: ownership, obligations, ledger, alerts ---------------------
+
+@app.get("/api/properties")
+def properties():
+    return {"results": store.list_properties()}
+
+
+@app.post("/api/properties")
+def create_property(body: dict = Body(...)):
+    return store.create_property(body)
+
+
+@app.get("/api/properties/{property_id}")
+def property_detail(property_id: int):
+    p = store.get_property(property_id)
+    if not p:
+        raise HTTPException(404, f"No property {property_id}.")
+    p["obligations"] = OBLIGATIONS["countries"].get(p["country"], {})
+    p["israel_obligations"] = OBLIGATIONS["israel_resident"]
+    return p
+
+
+@app.post("/api/properties/{property_id}/ledger")
+def add_ledger(property_id: int, entry: dict = Body(...)):
+    p = store.add_ledger_entry(property_id, entry)
+    if not p:
+        raise HTTPException(404, f"No property {property_id}.")
+    return p
+
+
+@app.get("/api/obligations/{country}")
+def obligations(country: str):
+    c = OBLIGATIONS["countries"].get(country.lower())
+    if not c:
+        raise HTTPException(404, f"No obligations for '{country}'.")
+    return {"disclaimer": OBLIGATIONS["disclaimer"], **c,
+            "israel_resident": OBLIGATIONS["israel_resident"]}
+
+
+@app.get("/api/alerts")
+def alerts():
+    return {"results": insights.ownership_alerts(
+        store.list_properties(), store.get_profile(), OBLIGATIONS)}
+
+
+# ---- Phase 4: market intelligence ----------------------------------------
+
+@app.get("/api/fx")
+def fx():
+    return {"eur_ils": insights.EUR_ILS, "as_of": insights.EUR_ILS_AS_OF}
+
+
+@app.get("/api/price-changes")
+def price_changes():
+    return {"results": insights.price_changes()}
 
 
 # Serve the built frontend when present (production mode).

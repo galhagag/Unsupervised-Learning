@@ -5,3 +5,4 @@ __pycache__/
 .venv/
 backend/data/live_listings.json
 backend/data/history.db
+backend/data/investments.db

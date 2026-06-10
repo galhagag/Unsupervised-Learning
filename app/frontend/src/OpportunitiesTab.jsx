@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchOpportunities, fetchScenarios, fetchFullAnalysis, fetchLiveStatus, refreshListings } from './api.js'
+import { fetchOpportunities, fetchScenarios, fetchFullAnalysis, fetchLiveStatus, refreshListings, fetchProjection, fetchMemo, createDeal } from './api.js'
 import CityFilter from './CityFilter.jsx'
 import AreasPanel from './AreasPanel.jsx'
 
@@ -156,12 +156,27 @@ export default function OpportunitiesTab({ city, setCity }) {
 
 function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
   const [compare, setCompare] = useState(null)
+  const [proj, setProj] = useState(null)
+  const [memo, setMemo] = useState(null)
+  const [dealMsg, setDealMsg] = useState(null)
   const f = listing.financials
   const sl = listing.financials_short_let
 
   const toggleCompare = async () => {
     if (compare) { setCompare(null); return }
     setCompare(await fetchFullAnalysis(listing.id, marginalRate, yearsAbroad, financing))
+  }
+  const toggleProj = async () => {
+    if (proj) { setProj(null); return }
+    setProj(await fetchProjection(listing.id))
+  }
+  const toggleMemo = async () => {
+    if (memo) { setMemo(null); return }
+    setMemo((await fetchMemo(listing.id)).markdown)
+  }
+  const startDeal = async () => {
+    const d = await createDeal(listing.id)
+    setDealMsg(`Deal #${d.id} started — open the Acquire tab to track it.`)
   }
 
   return (
@@ -266,10 +281,16 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
           <ul>{sl.notes.map((n) => <li key={n}>{n}</li>)}</ul>
         </details>
       )}
-      <button className="compare-btn" onClick={toggleCompare}>
-        {compare ? 'Hide scenario comparison' : 'Compare all 4 tax scenarios'}
-      </button>
+      <div className="card-actions">
+        <button className="compare-btn" onClick={toggleProj}>{proj ? 'Hide projection' : '10-yr projection'}</button>
+        <button className="compare-btn" onClick={toggleCompare}>{compare ? 'Hide scenarios' : 'Tax scenarios'}</button>
+        <button className="compare-btn" onClick={toggleMemo}>{memo ? 'Hide memo' : 'Memo'}</button>
+        <button className="compare-btn" onClick={startDeal}>Start deal</button>
+      </div>
+      {dealMsg && <p className="note">{dealMsg}</p>}
+      {proj && <ProjectionPanel proj={proj} />}
       {compare && <ScenarioCompare data={compare} />}
+      {memo && <pre className="memo">{memo}</pre>}
     </article>
   )
 }
@@ -302,6 +323,42 @@ function ScenarioCompare({ data }) {
         })}
       </tbody>
     </table>
+  )
+}
+
+function ProjectionPanel({ proj }) {
+  const m = proj.metrics
+  return (
+    <div className="projection">
+      <div className="fin-grid">
+        <Stat label="IRR" value={`${m.irr_pct ?? '—'}%`} strong />
+        <Stat label="After-tax profit" value={eur(m.total_after_tax_profit)} strong />
+        <Stat label="NPV" value={eur(m.npv)} />
+        <Stat label="Equity multiple" value={m.equity_multiple ?? '—'} />
+      </div>
+      {proj.milestones.length > 0 && (
+        <ul className="highlights">{proj.milestones.map((ms) => <li key={ms}>★ {ms}</li>)}</ul>
+      )}
+      <details>
+        <summary>Year-by-year cash flow ({proj.years.length}y, exit included)</summary>
+        <table className="compare">
+          <thead><tr><th>Yr</th><th>Regime</th><th>Net rent</th><th>Tax</th><th>Free CF</th><th>Value</th></tr></thead>
+          <tbody>
+            {proj.years.map((y) => (
+              <tr key={y.year}>
+                <td>{y.year}</td>
+                <td className="note">{y.scenario.replace('_', ' ')}</td>
+                <td>{eur(y.gross_rent)}</td><td>{eur(y.tax)}</td>
+                <td>{eur(y.free_cash_flow)}</td><td>{eur(y.property_value)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="note">Exit yr {proj.exit.scenario.replace('_', ' ')}: sale {eur(proj.exit.sale_value)},
+          local CGT {eur(proj.exit.local_cgt)}, Israeli CGT {eur(proj.exit.israeli_cgt)},
+          net proceeds {eur(proj.exit.net_sale_proceeds)}. {proj.exit.note}</p>
+      </details>
+    </div>
   )
 }
 

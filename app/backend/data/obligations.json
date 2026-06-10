@@ -1,0 +1,61 @@
+{
+  "disclaimer": "Recurring ownership obligations for a non-resident individual owner, current mid-2026. Dates and thresholds change - verify each year with your local accountant. Not tax advice.",
+  "countries": {
+    "bulgaria": {
+      "label": "Bulgaria",
+      "obligations": [
+        {"key": "bg_property_tax", "title": "Municipal property tax & waste fee", "frequency": "annual", "due": "by 30 June (discount for early payment)",
+         "detail": "Annual local property tax (data nedvizhimi imoti) plus waste collection fee (taksa smet), paid to the Sofia municipality. ~0.15-0.45% of tax value.",
+         "link": "https://www.sofia.bg/en/"},
+        {"key": "bg_rental_return", "title": "Annual income tax return (rental)", "frequency": "annual", "due": "30 April (prior year)",
+         "detail": "Declare rental income; 10% flat tax after the 10% statutory expense deduction. File with the NRA.",
+         "link": "https://nra.bg/en"},
+        {"key": "bg_tourist", "title": "Tourist tax & categorisation (if short-let)", "frequency": "monthly/annual", "due": "ongoing",
+         "detail": "Short lets require municipal categorisation as tourist accommodation and monthly tourist-tax remittance.",
+         "link": "https://www.sofia.bg/en/"}
+      ]
+    },
+    "italy": {
+      "label": "Italy",
+      "obligations": [
+        {"key": "it_imu_1", "title": "IMU first instalment", "frequency": "annual", "due": "16 June",
+         "detail": "First half of the annual municipal property tax on second homes (~0.4-1.06% of cadastral value).",
+         "link": "https://www.agenziaentrate.gov.it/portale/web/english"},
+        {"key": "it_imu_2", "title": "IMU balance", "frequency": "annual", "due": "16 December",
+         "detail": "Balancing second instalment of IMU for the year.",
+         "link": "https://www.agenziaentrate.gov.it/portale/web/english"},
+        {"key": "it_cedolare", "title": "Income tax return / cedolare secca", "frequency": "annual", "due": "by 30 November (Redditi PF)",
+         "detail": "Declare rental income under cedolare secca (21% flat, first property). Advance payments may fall in June/November.",
+         "link": "https://www.agenziaentrate.gov.it/portale/web/english"},
+        {"key": "it_cin", "title": "CIN compliance (if short-let)", "frequency": "ongoing", "due": "before listing",
+         "detail": "Display the national CIN code on every listing; meet safety requirements; remit tourist tax to the Comune.",
+         "link": "https://bdsr.ministeroturismo.gov.it/"}
+      ]
+    },
+    "greece": {
+      "label": "Greece",
+      "obligations": [
+        {"key": "gr_enfia", "title": "ENFIA property tax", "frequency": "annual", "due": "instalments to Feb of next year (often from May)",
+         "detail": "Annual property tax based on area and zone value; can be paid in monthly instalments.",
+         "link": "https://www.aade.gr/en"},
+        {"key": "gr_e2", "title": "E2 + income tax return (rental)", "frequency": "annual", "due": "filing season ~Mar-Jul",
+         "detail": "Declare rental income on form E2 with the annual return; progressive 15-45% rates (2026 scale).",
+         "link": "https://www.aade.gr/en"},
+        {"key": "gr_ama", "title": "AMA short-let declarations (if short-let)", "frequency": "per-stay/monthly", "due": "ongoing",
+         "detail": "Display the AMA number; submit short-stay declarations; meet safety standards. Note the central-Athens AMA freeze until end-2026.",
+         "link": "https://www.aade.gr/en"}
+      ]
+    }
+  },
+  "israel_resident": {
+    "label": "Israel (once you are a tax resident again)",
+    "obligations": [
+      {"key": "il_annual_return", "title": "Israeli annual tax return", "frequency": "annual", "due": "by 30 April (extensions common)",
+       "detail": "Report worldwide income including foreign rent; choose the 15% flat track (Sec. 122A) or marginal track + foreign tax credit.",
+       "link": "https://www.gov.il/en/departments/israel_tax_authority"},
+      {"key": "il_272", "title": "Foreign asset & income disclosure (Amendment 272)", "frequency": "annual", "due": "with the annual return",
+       "detail": "From 1 Jan 2026, returning residents must report foreign income and assets from day one - even while the income is exempt under the returning-resident relief.",
+       "link": "https://www.gov.il/en/departments/israel_tax_authority"}
+    ]
+  }
+}
