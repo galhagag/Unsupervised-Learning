@@ -13,6 +13,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+import history
+import scoring
 import scrapers
 import tax_engine
 
@@ -21,6 +23,7 @@ LISTINGS = json.loads((DATA_DIR / "listings.json").read_text())
 PROFESSIONALS = json.loads((DATA_DIR / "professionals.json").read_text())
 VETTING = json.loads((DATA_DIR / "vetting.json").read_text())
 RESEARCHED = json.loads((DATA_DIR / "researched_listings.json").read_text())
+AREAS = json.loads((DATA_DIR / "areas.json").read_text())
 LIVE_FILE = DATA_DIR / "live_listings.json"
 
 
@@ -45,6 +48,43 @@ app = FastAPI(title="Relocation Investment Explorer",
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"],
                    allow_methods=["*"], allow_headers=["*"])
+
+# Sample closed entries so the history view demonstrates relevance tracking.
+HISTORICAL_EXAMPLES = [
+    {"id": "hist-sof-001", "city": "Sofia", "country": "bulgaria",
+     "title": "2-bed in Iztok, 71 m2 (example of a sold listing)",
+     "price_eur": 168000, "size_m2": 71, "neighborhood": "Iztok",
+     "expected_monthly_rent_eur": 800, "annual_operating_costs_eur": 1400,
+     "highlights": ["Sold within 3 weeks at asking - Iztok liquidity datapoint"],
+     "risks": [], "data_source": "sample (historical)",
+     "_status": ("sold", "Example: sold May 2026 at asking price.")},
+    {"id": "hist-ath-001", "city": "Athens", "country": "greece",
+     "title": "1-bed in Pagrati, 48 m2 (example of a delisted listing)",
+     "price_eur": 142000, "size_m2": 48, "neighborhood": "Pagrati",
+     "expected_monthly_rent_eur": 620, "annual_operating_costs_eur": 1500,
+     "highlights": ["Withdrawn after two weeks - typical for well-priced Pagrati stock"],
+     "risks": [], "data_source": "sample (historical)",
+     "_status": ("irrelevant", "Example: withdrawn by owner, April 2026.")},
+    {"id": "hist-sic-001", "city": "Sicily", "country": "italy",
+     "title": "2-bed near Teatro Massimo, Palermo, 75 m2 (example, sold)",
+     "price_eur": 119000, "size_m2": 75, "neighborhood": "Palermo - Centro Storico",
+     "expected_monthly_rent_eur": 620, "annual_operating_costs_eur": 1500,
+     "highlights": ["Sold ~6% under asking - Centro Storico negotiation datapoint"],
+     "risks": [], "data_source": "sample (historical)",
+     "_status": ("sold", "Example: closed June 2026, 6% below asking.")},
+]
+
+
+@app.on_event("startup")
+def sync_history() -> None:
+    current = LISTINGS + RESEARCHED + _live()["listings"]
+    scores = {l["id"]: scoring.score(l) for l in current}
+    history.sync(current, scores)
+    examples = [dict(e) for e in HISTORICAL_EXAMPLES]
+    statuses = {e["id"]: e.pop("_status") for e in examples}
+    history.sync(examples, {e["id"]: scoring.score(e) for e in examples})
+    for eid, (status, note) in statuses.items():
+        history.set_status(eid, status, note)
 
 
 @app.get("/api/cities")
@@ -92,11 +132,13 @@ def opportunities(city: str | None = Query(None),
         except ValueError as e:
             raise HTTPException(400, str(e))
         results.append({**listing, "financials": long_let,
-                        "financials_short_let": short_let})
+                        "financials_short_let": short_let,
+                        "score": scoring.score(listing)})
 
     key = {
         "after_tax_yield": lambda r: r["financials"]["after_tax_yield_pct"],
         "gross_yield": lambda r: r["financials"]["gross_yield_pct"],
+        "score": lambda r: r["score"]["total"],
         "price": lambda r: -r["price_eur"],
     }.get(sort)
     if key is None:
@@ -137,6 +179,14 @@ def refresh_listings(city: str | None = Query(None)):
         cache = {"listings": result["listings"], "status": result["status"]}
     cache["fetched_at"] = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
     LIVE_FILE.write_text(json.dumps(cache, indent=2, ensure_ascii=False))
+
+    # Record in the history DB; delist live rows that vanished from a
+    # successfully refreshed city.
+    refreshed = {c for c, s in result["status"].items() if "OK" in s}
+    scores = {l["id"]: scoring.score(l) for l in result["listings"]}
+    history.sync(result["listings"], scores,
+                 seen_live_ids={l["id"] for l in cache["listings"]},
+                 refreshed_cities=refreshed)
     return {"fetched_at": cache["fetched_at"], "status": cache["status"],
             "live_count": len(cache["listings"])}
 
@@ -146,6 +196,35 @@ def live_status():
     cache = _live()
     return {"fetched_at": cache["fetched_at"], "status": cache["status"],
             "live_count": len(cache["listings"])}
+
+
+@app.get("/api/areas")
+def areas(city: str | None = Query(None)):
+    """Recommended areas per city with verdicts, scores and benchmarks."""
+    items = AREAS["areas"]
+    if city:
+        items = [a for a in items if a["city"].lower() == city.lower()]
+    return {"as_of": AREAS["as_of"], "note": AREAS["note"], "results": items}
+
+
+@app.get("/api/history")
+def listing_history(city: str | None = Query(None),
+                    include_irrelevant: bool = Query(True)):
+    """Historical listings database with relevance status and score snapshots."""
+    rows = history.query(city, include_irrelevant)
+    return {"count": len(rows),
+            "irrelevant_count": sum(1 for r in rows if not r["relevant"]),
+            "results": rows}
+
+
+@app.post("/api/history/{listing_id}/status")
+def set_history_status(listing_id: str,
+                       status: str = Query(pattern="^(sold|irrelevant|active)$"),
+                       note: str = Query("")):
+    """Manually mark a historical listing sold/irrelevant (or re-activate)."""
+    if not history.set_status(listing_id, status, note):
+        raise HTTPException(404, f"No listing '{listing_id}' in history.")
+    return {"id": listing_id, "status": status, "note": note}
 
 
 @app.get("/api/vetting")

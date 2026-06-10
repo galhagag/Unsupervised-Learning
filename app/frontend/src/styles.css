@@ -82,6 +82,30 @@ main h2 { font-size: 1.15rem; margin: 26px 0 10px; }
 .community li { margin: 10px 0; }
 .community a { color: var(--accent); }
 
+.grade { font-weight: 700; border-radius: 8px; padding: 3px 9px; font-size: 0.85rem; white-space: nowrap; }
+.grade-A { background: #d8f3e3; color: #0a7d4f; }
+.grade-B { background: #e7f0fd; color: #0f6fde; }
+.grade-C { background: #fdeee7; color: #b3541e; }
+
+.areas-panel { margin: 14px 0 6px; }
+.areas-toggle { border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 9px 14px; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--ink); width: 100%; text-align: left; }
+.areas-cards { margin-top: 12px; }
+.area-card .verdict-pill { background: #f3e8fd; color: #7a36c9; border-radius: 999px; padding: 3px 10px; font-size: 0.78rem; font-weight: 600; }
+.area-grid { grid-template-columns: repeat(4, 1fr); }
+.bar { height: 5px; background: var(--border); border-radius: 3px; margin-top: 4px; }
+.bar-fill { height: 100%; background: var(--accent); border-radius: 3px; }
+
+.toggle { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; color: var(--muted); }
+.history-table td { font-size: 0.85rem; }
+.row-irrelevant td { opacity: 0.55; }
+.status-pill { border-radius: 999px; padding: 2px 9px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+.status-active { background: #d8f3e3; color: #0a7d4f; }
+.status-stale { background: #fff3e6; color: #8a4b00; }
+.status-delisted, .status-irrelevant { background: #eee; color: #666; }
+.status-sold { background: #e7f0fd; color: #0f6fde; }
+.mini-btn { border: 1px solid var(--border); background: var(--card); border-radius: 6px; padding: 3px 8px; font-size: 0.78rem; cursor: pointer; margin: 1px 2px; }
+.mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+
 .financing-row { margin-top: 0; align-items: center; }
 .financing-row .compare-btn { margin-top: 0; }
 .compare-btn:disabled { opacity: 0.6; cursor: wait; }

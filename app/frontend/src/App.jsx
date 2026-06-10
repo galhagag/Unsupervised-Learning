@@ -2,9 +2,11 @@ import { useState } from 'react'
 import OpportunitiesTab from './OpportunitiesTab.jsx'
 import ProfessionalsTab from './ProfessionalsTab.jsx'
 import TaxGuideTab from './TaxGuideTab.jsx'
+import HistoryTab from './HistoryTab.jsx'
 
 const TABS = [
   { id: 'opportunities', label: 'Opportunities' },
+  { id: 'history', label: 'History' },
   { id: 'professionals', label: 'Realtors & Lawyers' },
   { id: 'tax', label: 'Israel Tax Guide' },
 ]
@@ -28,6 +30,7 @@ export default function App() {
       </header>
       <main>
         {tab === 'opportunities' && <OpportunitiesTab city={city} setCity={setCity} />}
+        {tab === 'history' && <HistoryTab city={city} setCity={setCity} />}
         {tab === 'professionals' && <ProfessionalsTab city={city} setCity={setCity} />}
         {tab === 'tax' && <TaxGuideTab />}
       </main>

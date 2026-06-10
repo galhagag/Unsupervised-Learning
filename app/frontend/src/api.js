@@ -24,6 +24,15 @@ export const fetchFullAnalysis = (id, marginalRate, yearsAbroad, financing = {})
 export const fetchProfessionals = (city, type) =>
   get('/professionals', { city, type })
 export const fetchVetting = () => get('/vetting')
+export const fetchAreas = (city) => get('/areas', { city })
+export const fetchHistory = (city, includeIrrelevant) =>
+  get('/history', { city, include_irrelevant: includeIrrelevant })
+export const setHistoryStatus = async (id, status, note = '') => {
+  const qs = new URLSearchParams({ status, note }).toString()
+  const res = await fetch(`${BASE}/history/${id}/status?${qs}`, { method: 'POST' })
+  if (!res.ok) throw new Error((await res.json()).detail || res.statusText)
+  return res.json()
+}
 export const fetchLiveStatus = () => get('/listings/live-status')
 export const refreshListings = async (city) => {
   const qs = city ? `?city=${encodeURIComponent(city)}` : ''

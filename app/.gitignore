@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 .venv/
 backend/data/live_listings.json
+backend/data/history.db

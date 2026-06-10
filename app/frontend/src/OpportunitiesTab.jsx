@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchOpportunities, fetchScenarios, fetchFullAnalysis, fetchLiveStatus, refreshListings } from './api.js'
 import CityFilter from './CityFilter.jsx'
+import AreasPanel from './AreasPanel.jsx'
 
 const eur = (n) => `€${Number(n).toLocaleString()}`
 
@@ -105,6 +106,7 @@ export default function OpportunitiesTab({ city, setCity }) {
           {Object.values(liveStatus.status || {}).join(' · ')}</p>
       )}
       {active && <p className="scenario-desc">{active.description}</p>}
+      <AreasPanel city={city} />
       {scenario === 'returning_resident' && yearsAbroad < 6 && (
         <p className="warning">With {yearsAbroad} years abroad you are NOT eligible for the
           returning-resident exemption (needs 6+ consecutive years) — figures below fall back
@@ -135,9 +137,18 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
     <article className="card">
       <div className="card-head">
         <span className="city-pill">{listing.city}</span>
+        {listing.score && (
+          <span className={`grade grade-${listing.score.grade[0]}`}
+            title={listing.score.rationale.join(' ')}>
+            {listing.score.grade} · {listing.score.total}
+          </span>
+        )}
         <span className="price">{eur(listing.price_eur)}</span>
       </div>
       <h3>{listing.title}</h3>
+      {listing.score?.area && (
+        <p className="note">Area: {listing.score.area} — {listing.score.area_verdict}</p>
+      )}
       {listing.listing_url && (
         <a href={listing.listing_url} target="_blank" rel="noreferrer" className="note">
           View original listing on {listing.data_source} ↗
@@ -195,6 +206,18 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
         </div>
       )}
 
+      {listing.score && (
+        <details className="notes">
+          <summary>Score breakdown — {listing.score.grade} ({listing.score.total}/100)</summary>
+          <ul>
+            {Object.entries(listing.score.components).map(([k, v]) => (
+              <li key={k}>{k}: {v}/100</li>
+            ))}
+            <li>risk adjustment: {listing.score.risk_adjustment}</li>
+            {listing.score.rationale.map((r) => <li key={r} className="note">{r}</li>)}
+          </ul>
+        </details>
+      )}
       <details className="exit">
         <summary>Exit: capital gains on sale (assumes +{f.exit_cgt_estimate.assumed_gain_pct}% after {f.exit_cgt_estimate.assumed_holding_years} yrs)</summary>
         <p>Local CGT {eur(f.exit_cgt_estimate.local_cgt)} · Israeli CGT after credit {eur(f.exit_cgt_estimate.israeli_cgt_after_credit)} · <strong>total {eur(f.exit_cgt_estimate.total_cgt)}</strong></p>
