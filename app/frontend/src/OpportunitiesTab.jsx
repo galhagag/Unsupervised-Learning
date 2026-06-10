@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchOpportunities, fetchScenarios, fetchFullAnalysis } from './api.js'
+import { fetchOpportunities, fetchScenarios, fetchFullAnalysis, fetchLiveStatus, refreshListings } from './api.js'
 import CityFilter from './CityFilter.jsx'
 
 const eur = (n) => `€${Number(n).toLocaleString()}`
@@ -9,15 +9,35 @@ export default function OpportunitiesTab({ city, setCity }) {
   const [scenario, setScenario] = useState('abroad')
   const [marginalRate, setMarginalRate] = useState(0.47)
   const [yearsAbroad, setYearsAbroad] = useState(5)
+  const [ltv, setLtv] = useState(0)
+  const [rate, setRate] = useState(4.5)
+  const [term, setTerm] = useState(20)
+  const [source, setSource] = useState('all')
+  const [liveStatus, setLiveStatus] = useState(null)
+  const [refreshing, setRefreshing] = useState(false)
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
 
+  const financing = { ltv: ltv / 100, rate: rate / 100, term }
+
   useEffect(() => { fetchScenarios().then(setScenarios).catch((e) => setError(e.message)) }, [])
+  useEffect(() => { fetchLiveStatus().then(setLiveStatus).catch(() => {}) }, [])
   useEffect(() => {
     setError(null)
-    fetchOpportunities(city, scenario, marginalRate, yearsAbroad)
+    fetchOpportunities(city, scenario, marginalRate, yearsAbroad, financing, source)
       .then(setData).catch((e) => setError(e.message))
-  }, [city, scenario, marginalRate, yearsAbroad])
+  }, [city, scenario, marginalRate, yearsAbroad, ltv, rate, term, source])
+
+  const doRefresh = async () => {
+    setRefreshing(true)
+    setError(null)
+    try {
+      const status = await refreshListings(city || undefined)
+      setLiveStatus(status)
+      const d = await fetchOpportunities(city, scenario, marginalRate, yearsAbroad, financing, source)
+      setData(d)
+    } catch (e) { setError(e.message) } finally { setRefreshing(false) }
+  }
 
   const active = scenarios.find((s) => s.id === scenario)
 
@@ -48,6 +68,42 @@ export default function OpportunitiesTab({ city, setCity }) {
           )}
         </div>
       </div>
+      <div className="controls financing-row">
+        <span className="rate-input">
+          <label>Mortgage LTV</label>
+          <input type="number" min="0" max="80" step="5" value={ltv}
+            onChange={(e) => setLtv(Number(e.target.value))} />%
+          <span className="note"> (0 = cash purchase)</span>
+        </span>
+        {ltv > 0 && (
+          <>
+            <span className="rate-input">
+              <label>Rate</label>
+              <input type="number" min="0.5" max="15" step="0.1" value={rate}
+                onChange={(e) => setRate(Number(e.target.value))} />%
+            </span>
+            <span className="rate-input">
+              <label>Term</label>
+              <input type="number" min="5" max="35" step="1" value={term}
+                onChange={(e) => setTerm(Number(e.target.value))} /> yrs
+            </span>
+          </>
+        )}
+        <span className="city-filter">
+          {['all', 'sample', 'live'].map((s) => (
+            <button key={s} className={source === s ? 'chip active' : 'chip'} onClick={() => setSource(s)}>
+              {s === 'all' ? 'All data' : s === 'sample' ? 'Curated' : 'Live'}
+            </button>
+          ))}
+        </span>
+        <button className="compare-btn" onClick={doRefresh} disabled={refreshing}>
+          {refreshing ? 'Fetching portals…' : `Refresh live listings${city ? ` (${city})` : ''}`}
+        </button>
+      </div>
+      {liveStatus?.fetched_at && (
+        <p className="note">Live data: {liveStatus.live_count} listings, fetched {liveStatus.fetched_at}.{' '}
+          {Object.values(liveStatus.status || {}).join(' · ')}</p>
+      )}
       {active && <p className="scenario-desc">{active.description}</p>}
       {scenario === 'returning_resident' && yearsAbroad < 6 && (
         <p className="warning">With {yearsAbroad} years abroad you are NOT eligible for the
@@ -57,21 +113,22 @@ export default function OpportunitiesTab({ city, setCity }) {
       {error && <p className="error">{error}</p>}
       <div className="cards">
         {data?.results.map((r) => (
-          <ListingCard key={r.id} listing={r} marginalRate={marginalRate} yearsAbroad={yearsAbroad} />
+          <ListingCard key={r.id} listing={r} marginalRate={marginalRate}
+            yearsAbroad={yearsAbroad} financing={financing} />
         ))}
       </div>
     </div>
   )
 }
 
-function ListingCard({ listing, marginalRate, yearsAbroad }) {
+function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
   const [compare, setCompare] = useState(null)
   const f = listing.financials
   const sl = listing.financials_short_let
 
   const toggleCompare = async () => {
     if (compare) { setCompare(null); return }
-    setCompare(await fetchFullAnalysis(listing.id, marginalRate, yearsAbroad))
+    setCompare(await fetchFullAnalysis(listing.id, marginalRate, yearsAbroad, financing))
   }
 
   return (
@@ -81,6 +138,11 @@ function ListingCard({ listing, marginalRate, yearsAbroad }) {
         <span className="price">{eur(listing.price_eur)}</span>
       </div>
       <h3>{listing.title}</h3>
+      {listing.listing_url && (
+        <a href={listing.listing_url} target="_blank" rel="noreferrer" className="note">
+          View original listing on {listing.data_source} ↗
+        </a>
+      )}
       <p className="overview">{listing.overview}</p>
       <ul className="highlights">
         {listing.highlights.map((h) => <li key={h}>✓ {h}</li>)}
@@ -124,6 +186,14 @@ function ListingCard({ listing, marginalRate, yearsAbroad }) {
         <Stat label="Local tax" value={eur(f.local_tax)} />
         <Stat label="Israeli tax" value={eur(f.israeli_tax)} />
       </div>
+      {f.financing && (
+        <div className="fin-grid">
+          <Stat label="Equity in" value={eur(f.financing.equity_invested)} />
+          <Stat label="Debt service / yr" value={eur(f.financing.annual_debt_service)} />
+          <Stat label="Cash flow after debt" value={eur(f.financing.after_tax_cash_flow_after_debt)} strong />
+          <Stat label="Cash-on-cash" value={`${f.financing.cash_on_cash_pct}%`} strong />
+        </div>
+      )}
 
       <details className="exit">
         <summary>Exit: capital gains on sale (assumes +{f.exit_cgt_estimate.assumed_gain_pct}% after {f.exit_cgt_estimate.assumed_holding_years} yrs)</summary>

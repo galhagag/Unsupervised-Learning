@@ -272,12 +272,32 @@ def _rent_basis(listing: dict, rent_strategy: str) -> tuple[float, float, list]:
     return gross, opex, notes
 
 
+def _mortgage(price: float, ltv: float, rate: float, term_years: int) -> dict | None:
+    """French-annuity loan: annual debt service and first-year interest."""
+    loan = price * ltv
+    if loan <= 0:
+        return None
+    m, n = rate / 12, term_years * 12
+    pmt = loan * m / (1 - (1 + m) ** -n) if m > 0 else loan / n
+    balance, year1_interest = loan, 0.0
+    for _ in range(12):
+        interest = balance * m
+        year1_interest += interest
+        balance -= pmt - interest
+    return {"loan_amount": round(loan),
+            "annual_debt_service": round(pmt * 12),
+            "year1_interest": round(year1_interest)}
+
+
 def analyze(listing: dict, scenario: str = "abroad",
             marginal_rate: float | None = None,
             assumed_gain_pct: float = 0.25,
             holding_years: int = 6,
             rent_strategy: str = "long_let",
-            years_abroad: int = 5) -> dict:
+            years_abroad: int = 5,
+            ltv: float = 0.0,
+            mortgage_rate: float = 0.045,
+            mortgage_term_years: int = 20) -> dict:
     """Run the full financial analysis for one listing under one scenario."""
     if scenario not in SCENARIOS:
         raise ValueError(f"Unknown scenario '{scenario}'. "
@@ -290,15 +310,25 @@ def analyze(listing: dict, scenario: str = "abroad",
     gross_rent, opex, strategy_notes = _rent_basis(listing, rent_strategy)
     net_income = gross_rent - opex
 
+    mortgage = _mortgage(price, ltv, mortgage_rate, mortgage_term_years)
+    interest_y1 = mortgage["year1_interest"] if mortgage else 0.0
+
     local_tax = country["rental_tax"](gross_rent, net_income)
     notes = [country["rental_tax_note"], *strategy_notes]
+    if mortgage:
+        notes.append("Financing does NOT reduce the local tax base in any of "
+                     "the three countries (flat/gross-based regimes for "
+                     "individuals). On the Israeli marginal track, year-1 "
+                     "loan interest IS deductible; on the 15% flat track it "
+                     "is not.")
 
     israeli_tax = 0.0
     if scenario == "israel_15_track":
         israeli_tax, note = _israeli_flat_track(gross_rent, price)
         notes.append(note)
     elif scenario == "israel_marginal_track":
-        israeli_tax, note = _israeli_marginal_track(net_income, local_tax,
+        israeli_tax, note = _israeli_marginal_track(net_income - interest_y1,
+                                                    local_tax,
                                                     marginal_rate, price)
         notes.append(note)
         notes.append(ISRAEL["surtax_note"])
@@ -306,7 +336,8 @@ def analyze(listing: dict, scenario: str = "abroad",
         if years_abroad < 6:
             # Not eligible: fall back to the cheaper of the two tracks.
             flat, _ = _israeli_flat_track(gross_rent, price)
-            marg, _ = _israeli_marginal_track(net_income, local_tax,
+            marg, _ = _israeli_marginal_track(net_income - interest_y1,
+                                              local_tax,
                                               marginal_rate, price)
             israeli_tax = min(flat, marg)
             notes.append(f"NOT ELIGIBLE with {years_abroad} years abroad - "
@@ -330,6 +361,20 @@ def analyze(listing: dict, scenario: str = "abroad",
     total_tax = local_tax + israeli_tax
     after_tax = net_income - total_tax
 
+    financing = None
+    if mortgage:
+        equity = price * (1 - ltv) + price * country["buy_costs_pct"]
+        cash_flow = after_tax - mortgage["annual_debt_service"]
+        financing = {
+            **mortgage,
+            "ltv_pct": round(ltv * 100),
+            "mortgage_rate_pct": round(mortgage_rate * 100, 2),
+            "term_years": mortgage_term_years,
+            "equity_invested": round(equity),
+            "after_tax_cash_flow_after_debt": round(cash_flow),
+            "cash_on_cash_pct": round(cash_flow / equity * 100, 2),
+        }
+
     analysis = FinancialAnalysis(
         scenario=scenario,
         gross_rent=round(gross_rent),
@@ -351,12 +396,15 @@ def analyze(listing: dict, scenario: str = "abroad",
         "buy_costs_pct": country["buy_costs_pct"] * 100,
         "gross_yield_pct": round(gross_rent / price * 100, 2),
         "net_pre_tax_yield_pct": round(net_income / all_in_cost * 100, 2),
+        "financing": financing,
         **analysis.__dict__,
     }
 
 
 def analyze_all_scenarios(listing: dict, marginal_rate: float | None = None,
-                          years_abroad: int = 5) -> dict:
+                          years_abroad: int = 5, ltv: float = 0.0,
+                          mortgage_rate: float = 0.045,
+                          mortgage_term_years: int = 20) -> dict:
     """All scenarios x both rent strategies (short let only where allowed)."""
     out = {}
     for strategy in ("long_let", "short_let"):
@@ -365,7 +413,9 @@ def analyze_all_scenarios(listing: dict, marginal_rate: float | None = None,
             continue
         out[strategy] = {
             s: analyze(listing, s, marginal_rate, rent_strategy=strategy,
-                       years_abroad=years_abroad)
+                       years_abroad=years_abroad, ltv=ltv,
+                       mortgage_rate=mortgage_rate,
+                       mortgage_term_years=mortgage_term_years)
             for s in SCENARIOS
         }
     return out

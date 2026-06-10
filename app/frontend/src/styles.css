@@ -82,6 +82,10 @@ main h2 { font-size: 1.15rem; margin: 26px 0 10px; }
 .community li { margin: 10px 0; }
 .community a { color: var(--accent); }
 
+.financing-row { margin-top: 0; align-items: center; }
+.financing-row .compare-btn { margin-top: 0; }
+.compare-btn:disabled { opacity: 0.6; cursor: wait; }
+
 table.strategy-compare { margin: 10px 0 4px; }
 table.strategy-compare td:first-child { color: var(--muted); }
 footer { margin-top: 40px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--border); padding-top: 14px; }
