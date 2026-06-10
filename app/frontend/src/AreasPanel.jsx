@@ -3,15 +3,18 @@ import { fetchAreas } from './api.js'
 
 export default function AreasPanel({ city }) {
   const [data, setData] = useState(null)
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => { fetchAreas(city).then(setData).catch(() => {}) }, [city])
+  // 14 cards for "All cities" would bury the listings; auto-expand only
+  // when a single city's guide (4-5 cards) is in view.
+  useEffect(() => { setOpen(Boolean(city)) }, [city])
   if (!data?.results.length) return null
 
   return (
     <section className="areas-panel">
       <button className="areas-toggle" onClick={() => setOpen(!open)}>
-        {open ? '▾' : '▸'} Recommended areas{city ? ` — ${city}` : ''} (as of {data.as_of})
+        {open ? '▾' : '▸'} Recommended areas{city ? ` — ${city}` : ''} ({data.results.length} areas, as of {data.as_of})
       </button>
       {open && (
         <>

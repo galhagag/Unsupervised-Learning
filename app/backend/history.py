@@ -124,6 +124,13 @@ def set_status(listing_id: str, status: str, note: str = "") -> bool:
         return cur.rowcount > 0
 
 
+def closed_ids() -> set[str]:
+    """IDs of listings marked sold/irrelevant/delisted (relevant = 0)."""
+    with _connect() as conn:
+        return {r["id"] for r in
+                conn.execute("SELECT id FROM listings WHERE relevant = 0")}
+
+
 def query(city: str | None = None, include_irrelevant: bool = True) -> list[dict]:
     sql = "SELECT * FROM listings"
     where, params = [], []

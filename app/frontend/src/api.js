@@ -11,9 +11,9 @@ async function get(path, params = {}) {
 
 export const fetchCities = () => get('/cities')
 export const fetchScenarios = () => get('/scenarios')
-export const fetchOpportunities = (city, scenario, marginalRate, yearsAbroad, financing = {}, source = 'all') =>
+export const fetchOpportunities = (city, scenario, marginalRate, yearsAbroad, financing = {}, source = 'all', sort = 'after_tax_yield') =>
   get('/opportunities', {
-    city, scenario, marginal_rate: marginalRate, years_abroad: yearsAbroad, source,
+    city, scenario, marginal_rate: marginalRate, years_abroad: yearsAbroad, source, sort,
     ltv: financing.ltv, mortgage_rate: financing.rate, mortgage_term_years: financing.term,
   })
 export const fetchFullAnalysis = (id, marginalRate, yearsAbroad, financing = {}) =>

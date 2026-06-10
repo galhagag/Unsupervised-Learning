@@ -14,8 +14,10 @@ export default function OpportunitiesTab({ city, setCity }) {
   const [rate, setRate] = useState(4.5)
   const [term, setTerm] = useState(20)
   const [source, setSource] = useState('all')
+  const [sort, setSort] = useState('after_tax_yield')
   const [liveStatus, setLiveStatus] = useState(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
 
@@ -24,10 +26,16 @@ export default function OpportunitiesTab({ city, setCity }) {
   useEffect(() => { fetchScenarios().then(setScenarios).catch((e) => setError(e.message)) }, [])
   useEffect(() => { fetchLiveStatus().then(setLiveStatus).catch(() => {}) }, [])
   useEffect(() => {
-    setError(null)
-    fetchOpportunities(city, scenario, marginalRate, yearsAbroad, financing, source)
-      .then(setData).catch((e) => setError(e.message))
-  }, [city, scenario, marginalRate, yearsAbroad, ltv, rate, term, source])
+    // Debounce so typing in the numeric inputs doesn't fire a request per keystroke.
+    setLoading(true)
+    const t = setTimeout(() => {
+      setError(null)
+      fetchOpportunities(city, scenario, marginalRate, yearsAbroad, financing, source, sort)
+        .then(setData).catch((e) => setError(e.message))
+        .finally(() => setLoading(false))
+    }, 350)
+    return () => clearTimeout(t)
+  }, [city, scenario, marginalRate, yearsAbroad, ltv, rate, term, source, sort])
 
   const doRefresh = async () => {
     setRefreshing(true)
@@ -35,7 +43,7 @@ export default function OpportunitiesTab({ city, setCity }) {
     try {
       const status = await refreshListings(city || undefined)
       setLiveStatus(status)
-      const d = await fetchOpportunities(city, scenario, marginalRate, yearsAbroad, financing, source)
+      const d = await fetchOpportunities(city, scenario, marginalRate, yearsAbroad, financing, source, sort)
       setData(d)
     } catch (e) { setError(e.message) } finally { setRefreshing(false) }
   }
@@ -97,6 +105,15 @@ export default function OpportunitiesTab({ city, setCity }) {
             </button>
           ))}
         </span>
+        <span className="rate-input">
+          <label>Sort by</label>
+          <select value={sort} onChange={(e) => setSort(e.target.value)}>
+            <option value="after_tax_yield">After-tax yield</option>
+            <option value="score">Score</option>
+            <option value="gross_yield">Gross yield</option>
+            <option value="price">Price (low to high)</option>
+          </select>
+        </span>
         <button className="compare-btn" onClick={doRefresh} disabled={refreshing}>
           {refreshing ? 'Fetching portals…' : `Refresh live listings${city ? ` (${city})` : ''}`}
         </button>
@@ -113,6 +130,20 @@ export default function OpportunitiesTab({ city, setCity }) {
           to the cheaper of the two regular Israeli tracks.</p>
       )}
       {error && <p className="error">{error}</p>}
+      {data?.closed_excluded > 0 && (
+        <p className="note">{data.closed_excluded} listing{data.closed_excluded > 1 ? 's' : ''} marked
+          sold / no longer relevant hidden — manage in the History tab.</p>
+      )}
+      {loading && !data && <p className="note">Loading opportunities…</p>}
+      {!loading && data?.results.length === 0 && (
+        <div className="empty-state">
+          {source === 'live'
+            ? <>No live listings cached yet. Hit <strong>Refresh live listings</strong> — note the
+                portals can only be reached from a machine with open internet (see the status line
+                for per-portal results).</>
+            : <>No listings match the current filters.</>}
+        </div>
+      )}
       <div className="cards">
         {data?.results.map((r) => (
           <ListingCard key={r.id} listing={r} marginalRate={marginalRate}
@@ -143,7 +174,9 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
             {listing.score.grade} · {listing.score.total}
           </span>
         )}
-        <span className="price">{eur(listing.price_eur)}</span>
+        <span className="price">{eur(listing.price_eur)}
+          <span className="ppm2"> · {eur(Math.round(listing.price_eur / listing.size_m2))}/m²</span>
+        </span>
       </div>
       <h3>{listing.title}</h3>
       {listing.score?.area && (

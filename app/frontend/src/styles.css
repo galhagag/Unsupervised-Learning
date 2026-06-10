@@ -82,6 +82,9 @@ main h2 { font-size: 1.15rem; margin: 26px 0 10px; }
 .community li { margin: 10px 0; }
 .community a { color: var(--accent); }
 
+.ppm2 { color: var(--muted); font-weight: 400; font-size: 0.82rem; }
+.empty-state { background: var(--card); border: 1px dashed var(--border); border-radius: 12px; padding: 28px 20px; text-align: center; color: var(--muted); margin-top: 16px; }
+
 .grade { font-weight: 700; border-radius: 8px; padding: 3px 9px; font-size: 0.85rem; white-space: nowrap; }
 .grade-A { background: #d8f3e3; color: #0a7d4f; }
 .grade-B { background: #e7f0fd; color: #0f6fde; }

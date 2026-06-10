@@ -34,11 +34,14 @@ def _live() -> dict:
 
 
 def _all_listings(source: str) -> list:
-    return {
+    pools = {
         "sample": LISTINGS,
         "researched": RESEARCHED,
         "live": _live()["listings"],
-    }.get(source) or LISTINGS + RESEARCHED + _live()["listings"]
+    }
+    if source in pools:        # empty pool is a valid answer, not a fallthrough
+        return pools[source]
+    return LISTINGS + RESEARCHED + _live()["listings"]
 
 CITIES = ["Sofia", "Sicily", "Athens"]
 
@@ -106,16 +109,24 @@ def opportunities(city: str | None = Query(None),
                   mortgage_rate: float = Query(0.045, ge=0.005, le=0.15),
                   mortgage_term_years: int = Query(20, ge=5, le=35),
                   source: str = Query("all", pattern="^(all|sample|researched|live)$"),
+                  include_closed: bool = Query(False),
                   sort: str = Query("after_tax_yield")):
     """Listings ranked by after-tax yield under the chosen tax scenario.
 
     Returns long-let financials plus a short-let analysis side by side
     (null where short letting is not legally available to a new buyer).
+    Listings marked sold/irrelevant/delisted in the history database are
+    excluded unless include_closed=true.
     """
+    if city and city.lower() not in {c.lower() for c in CITIES}:
+        raise HTTPException(404, f"Unknown city '{city}'. Choose from {CITIES}.")
     pool = _all_listings(source)
     items = [l for l in pool if not city or l["city"].lower() == city.lower()]
-    if city and not items and not [l for l in pool if l["city"].lower() == city.lower()]:
-        raise HTTPException(404, f"Unknown city '{city}'. Choose from {CITIES}.")
+    closed = history.closed_ids()
+    closed_excluded = 0
+    if not include_closed:
+        closed_excluded = sum(1 for l in items if l["id"] in closed)
+        items = [l for l in items if l["id"] not in closed]
 
     fin_kwargs = dict(marginal_rate=marginal_rate, years_abroad=years_abroad,
                       ltv=ltv, mortgage_rate=mortgage_rate,
@@ -144,7 +155,8 @@ def opportunities(city: str | None = Query(None),
     if key is None:
         raise HTTPException(400, f"Unknown sort '{sort}'.")
     results.sort(key=key, reverse=True)
-    return {"scenario": scenario, "count": len(results), "results": results}
+    return {"scenario": scenario, "count": len(results),
+            "closed_excluded": closed_excluded, "results": results}
 
 
 @app.get("/api/opportunities/{listing_id}/full-analysis")
