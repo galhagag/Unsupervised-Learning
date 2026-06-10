@@ -1,23 +1,46 @@
-"""Shared helpers for portal scrapers.
+"""Shared HTTP + schema-mapping helpers for portal scrapers.
 
-Scrapers run on demand (POST /api/listings/refresh) and fail soft: each
-adapter returns (listings, status) and a blocked/changed portal never breaks
-the app - the curated sample data remains available.
+The portals (immobiliare.it, homes.bg, spitogatos.gr) all run bot protection
+that fingerprints the TLS handshake, so a vanilla httpx/requests client gets
+403 even with perfect browser headers. We therefore prefer curl_cffi, which
+impersonates Chrome's TLS fingerprint and gets through ordinary Cloudflare/
+Akamai-style protection (DataDome on spitogatos may still challenge).
 
-Note: scraping may conflict with portal terms of service; this is built for
-personal, low-volume research use. Keep MAX_RESULTS small and do not poll.
+Set SCRAPER_PROXY (e.g. http://user:pass@host:port) to route requests
+through a proxy if your IP gets rate-limited.
+
+Scrapers run on demand and fail soft: each adapter returns (listings,
+status) and a blocked/changed portal never breaks the app. Scraping may
+conflict with portal terms of service; this is built for personal,
+low-volume research use. Keep MAX_RESULTS small and do not poll.
 """
 
-import httpx
+import json
+import os
+import re
+
+try:
+    from curl_cffi import requests as curl_requests
+    HAVE_CURL_CFFI = True
+except ImportError:  # pragma: no cover - exercised only without the dep
+    import httpx
+    HAVE_CURL_CFFI = False
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                   "AppleWebKit/537.36 (KHTML, like Gecko) "
-                  "Chrome/125.0 Safari/537.36",
+                  "Chrome/125.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,"
+              "application/json;q=0.8,*/*;q=0.7",
     "Accept-Language": "en-US,en;q=0.9",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Upgrade-Insecure-Requests": "1",
 }
-TIMEOUT = 15.0
+TIMEOUT = 20.0
 MAX_RESULTS = 6
+PROXY = os.environ.get("SCRAPER_PROXY")
 
 # Conservative city defaults used when a portal doesn't expose expected rent.
 # EUR per m2 per month (long let) and short-let nightly economics.
@@ -29,18 +52,41 @@ CITY_ESTIMATES = {
 COUNTRY_BY_CITY = {"Sofia": "bulgaria", "Sicily": "italy", "Athens": "greece"}
 
 
-def fetch_json(url: str, **kwargs) -> dict:
-    with httpx.Client(headers=HEADERS, timeout=TIMEOUT, follow_redirects=True) as c:
-        r = c.get(url, **kwargs)
+def _get(url: str, referer: str | None = None, accept_json: bool = False):
+    headers = dict(HEADERS)
+    if referer:
+        headers["Referer"] = referer
+        headers["Sec-Fetch-Site"] = "same-origin"
+    if accept_json:
+        headers["Accept"] = "application/json, text/plain, */*"
+        headers["Sec-Fetch-Dest"] = "empty"
+        headers["Sec-Fetch-Mode"] = "cors"
+        headers.pop("Upgrade-Insecure-Requests", None)
+    if HAVE_CURL_CFFI:
+        proxies = {"http": PROXY, "https": PROXY} if PROXY else None
+        r = curl_requests.get(url, headers=headers, timeout=TIMEOUT,
+                              impersonate="chrome", proxies=proxies,
+                              allow_redirects=True)
         r.raise_for_status()
+        return r
+    with httpx.Client(headers=headers, timeout=TIMEOUT, proxy=PROXY,
+                      follow_redirects=True) as c:
+        r = c.get(url)
+        r.raise_for_status()
+        return r
+
+
+def fetch_json(url: str, referer: str | None = None) -> dict:
+    r = _get(url, referer=referer, accept_json=True)
+    try:
         return r.json()
+    except (json.JSONDecodeError, ValueError) as e:
+        raise ValueError(f"non-JSON response (likely a bot challenge page, "
+                         f"{len(r.text)} bytes)") from e
 
 
-def fetch_html(url: str, **kwargs) -> str:
-    with httpx.Client(headers=HEADERS, timeout=TIMEOUT, follow_redirects=True) as c:
-        r = c.get(url, **kwargs)
-        r.raise_for_status()
-        return r.text
+def fetch_html(url: str, referer: str | None = None) -> str:
+    return _get(url, referer=referer).text
 
 
 def to_listing(*, portal: str, portal_id: str, city: str, title: str,
@@ -54,7 +100,7 @@ def to_listing(*, portal: str, portal_id: str, city: str, title: str,
     est = CITY_ESTIMATES[city]
     monthly_rent = round(size * est["rent_per_m2"])
     nightly = round(size * est["nightly_per_m2"])
-    listing = {
+    return {
         "id": f"{portal}-{portal_id}",
         "city": city,
         "country": COUNTRY_BY_CITY[city],
@@ -83,4 +129,26 @@ def to_listing(*, portal: str, portal_id: str, city: str, title: str,
                     "registration freeze until end-2026).",
         },
     }
-    return listing
+
+
+def parse_number(v) -> float | None:
+    """Best-effort numeric extraction: '85', '85 m²', '139 000' (space
+    thousands separator, used by homes.bg), '1.250,50', '95,5'."""
+    if v is None:
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    s = re.sub(r"m²|m2|кв\.?\s?м|sq\.?\s?m|sqm", "", str(v), flags=re.I)
+    s = s.replace(" ", " ").strip()
+    if re.fullmatch(r"\d{1,3}([ .]\d{3})+", s):    # 139 000 / 139.000
+        s = s.replace(" ", "").replace(".", "")
+    else:
+        s = s.split()[0] if s.split() else ""
+        if "," in s and "." in s:                  # 1.250,50 -> 1250.50
+            s = s.replace(".", "").replace(",", ".")
+        elif "," in s:
+            s = s.replace(",", ".")
+    try:
+        return float(s)
+    except ValueError:
+        return None

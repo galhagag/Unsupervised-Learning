@@ -53,12 +53,19 @@ only (not on the 15% flat track, and it never reduces the local gross-based taxe
 
 - **Curated listings** (`backend/data/listings.json`): realistic mid-2026 sample data.
 - **Live listings** (`POST /api/listings/refresh`): scraper adapters in `backend/scrapers/`
-  for homes.bg (Sofia), immobiliare.it (Sicily) and spitogatos.gr (Athens). Each adapter
-  fails soft and reports status — spitogatos in particular sits behind DataDome and will
-  often require manual entry. Scraped listings carry `estimated: true` because rent and
-  operating costs are city-level estimates, not underwritten numbers. Note that scraping
-  may conflict with portal terms of service; the adapters are built for personal,
-  low-volume research use. **Live fetches will not work from inside a sandboxed
-  environment that blocks outbound HTTP — run the backend on your own machine.**
+  with an ordered fallback chain per city — homes.bg (Sofia), immobiliare.it (Sicily),
+  and for Athens **indomio.gr first** (immobiliare's Greek portal: same JSON API, no
+  DataDome) with spitogatos.gr as fallback. The HTTP layer uses **curl_cffi Chrome TLS
+  impersonation** (`impersonate="chrome"`), which is what gets past the portals' edge
+  bot checks — a vanilla httpx/requests client gets 403 regardless of headers. Set
+  `SCRAPER_PROXY=http://user:pass@host:port` if your IP gets rate-limited. Each adapter
+  fails soft and reports per-portal status. Parsers are verified against recorded
+  response-shape fixtures (`backend/tests/`, `python -m pytest tests/`); if a portal
+  drifts its schema, update the fixture from a real response and adjust. Scraped
+  listings carry `estimated: true` because rent and operating costs are city-level
+  estimates, not underwritten numbers. Scraping may conflict with portal terms of
+  service; the adapters are built for personal, low-volume research use. **Live fetches
+  cannot work from a sandboxed environment that blocks outbound HTTP — run the backend
+  on your own machine.**
 - **Professionals** (`backend/data/professionals.json`) and **vetting toolkit**
   (`backend/data/vetting.json`): compiled from public non-sponsored sources.

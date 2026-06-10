@@ -1,21 +1,29 @@
-"""Portal scraper registry: one adapter per city in the closed list."""
+"""Portal scraper registry: ordered fallback chain of adapters per city."""
 
-from . import homes_bg, immobiliare, spitogatos
+from . import homes_bg, immobiliare, indomio, spitogatos
 
 ADAPTERS = {
-    "Sofia": homes_bg,
-    "Sicily": immobiliare,
-    "Athens": spitogatos,
+    "Sofia": [homes_bg],
+    "Sicily": [immobiliare],
+    "Athens": [indomio, spitogatos],   # indomio first: no DataDome
 }
 
 
 def refresh(cities: list[str] | None = None, max_per_city: int = 6) -> dict:
-    """Run the adapters and return {listings, status} - never raises."""
+    """Run each city's adapter chain until one yields listings.
+
+    Returns {listings, status} and never raises - every adapter fails soft.
+    """
     listings, status = [], {}
-    for city, adapter in ADAPTERS.items():
+    for city, chain in ADAPTERS.items():
         if cities and city not in cities:
             continue
-        city_listings, city_status = adapter.fetch(max_per_city)
-        listings.extend(city_listings)
-        status[city] = city_status
+        attempts = []
+        for adapter in chain:
+            city_listings, city_status = adapter.fetch(max_per_city)
+            attempts.append(city_status)
+            if city_listings:
+                listings.extend(city_listings)
+                break
+        status[city] = " | ".join(attempts)
     return {"listings": listings, "status": status}

@@ -1,0 +1,31 @@
+{
+  "hasMoreOffers": true,
+  "result": [
+    {
+      "id": "5j7Bx2a",
+      "type": "2-стаен апартамент",
+      "title": "2-стаен апартамент, кв. Лозенец",
+      "area": "72",
+      "location": "София, кв. Лозенец",
+      "price": {"value": "139 000", "currency": "EUR", "per_square": "1 930"},
+      "photo": {"path": "/photos/1.jpg"}
+    },
+    {
+      "id": "8k2Mn9c",
+      "type": "3-стаен апартамент",
+      "title": "3-стаен апартамент, кв. Младост 4",
+      "area": "98 m²",
+      "location": {"description": "София, кв. Младост 4"},
+      "price": {"value": "265 000", "currency": "BGN"},
+      "photo": {"path": "/photos/2.jpg"}
+    },
+    {
+      "id": "0pQr44z",
+      "type": "Гараж",
+      "title": "Гараж, кв. Дружба",
+      "area": "18",
+      "location": "София, кв. Дружба",
+      "price": {"value": "14 500", "currency": "EUR"}
+    }
+  ]
+}
