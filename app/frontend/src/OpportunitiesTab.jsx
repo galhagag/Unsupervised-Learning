@@ -90,9 +90,9 @@ export default function OpportunitiesTab({ city, setCity }) {
           </>
         )}
         <span className="city-filter">
-          {['all', 'sample', 'live'].map((s) => (
+          {['all', 'sample', 'researched', 'live'].map((s) => (
             <button key={s} className={source === s ? 'chip active' : 'chip'} onClick={() => setSource(s)}>
-              {s === 'all' ? 'All data' : s === 'sample' ? 'Curated' : 'Live'}
+              {s === 'all' ? 'All data' : s === 'sample' ? 'Curated' : s === 'researched' ? 'Researched' : 'Live'}
             </button>
           ))}
         </span>

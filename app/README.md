@@ -52,6 +52,11 @@ only (not on the 15% flat track, and it never reduces the local gross-based taxe
 ## Data sources
 
 - **Curated listings** (`backend/data/listings.json`): realistic mid-2026 sample data.
+- **Researched listings** (`backend/data/researched_listings.json`): real listings found
+  via web search on the date stamped in each entry, with source links. Each entry states
+  its `price_basis` — `listed` where the asking price was published, or estimated from the
+  district average EUR/m2 where it wasn't. Verify availability on the source site before
+  acting.
 - **Live listings** (`POST /api/listings/refresh`): scraper adapters in `backend/scrapers/`
   with an ordered fallback chain per city — homes.bg (Sofia), immobiliare.it (Sicily),
   and for Athens **indomio.gr first** (immobiliare's Greek portal: same JSON API, no

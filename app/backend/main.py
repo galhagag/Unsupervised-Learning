@@ -20,6 +20,7 @@ DATA_DIR = Path(__file__).parent / "data"
 LISTINGS = json.loads((DATA_DIR / "listings.json").read_text())
 PROFESSIONALS = json.loads((DATA_DIR / "professionals.json").read_text())
 VETTING = json.loads((DATA_DIR / "vetting.json").read_text())
+RESEARCHED = json.loads((DATA_DIR / "researched_listings.json").read_text())
 LIVE_FILE = DATA_DIR / "live_listings.json"
 
 
@@ -30,11 +31,11 @@ def _live() -> dict:
 
 
 def _all_listings(source: str) -> list:
-    if source == "sample":
-        return LISTINGS
-    if source == "live":
-        return _live()["listings"]
-    return LISTINGS + _live()["listings"]
+    return {
+        "sample": LISTINGS,
+        "researched": RESEARCHED,
+        "live": _live()["listings"],
+    }.get(source) or LISTINGS + RESEARCHED + _live()["listings"]
 
 CITIES = ["Sofia", "Sicily", "Athens"]
 
@@ -64,7 +65,7 @@ def opportunities(city: str | None = Query(None),
                   ltv: float = Query(0.0, ge=0.0, le=0.8),
                   mortgage_rate: float = Query(0.045, ge=0.005, le=0.15),
                   mortgage_term_years: int = Query(20, ge=5, le=35),
-                  source: str = Query("all", pattern="^(all|sample|live)$"),
+                  source: str = Query("all", pattern="^(all|sample|researched|live)$"),
                   sort: str = Query("after_tax_yield")):
     """Listings ranked by after-tax yield under the chosen tax scenario.
 
