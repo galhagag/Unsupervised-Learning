@@ -24,6 +24,10 @@ from scrapers.common import CITY_ESTIMATES, parse_number, to_listing
 
 MANUAL_FILE = Path(__file__).parent / "data" / "manual_listings.json"
 
+# Sonnet is sufficient for structured extraction and faster/cheaper than
+# Opus; override with EXTRACTOR_MODEL=claude-opus-4-8 for messier inputs.
+EXTRACTOR_MODEL = os.environ.get("EXTRACTOR_MODEL", "claude-sonnet-4-6")
+
 EUR_PER_BGN = 1 / 1.95583
 
 
@@ -49,7 +53,7 @@ def extract_with_llm(text: str) -> tuple[dict, str]:
 
     client = anthropic.Anthropic()
     response = client.messages.parse(
-        model="claude-opus-4-8",
+        model=EXTRACTOR_MODEL,
         max_tokens=4096,
         system="You extract structured data from real-estate listings. The "
                "text may be in Bulgarian, Greek, Italian, English or Hebrew. "
@@ -63,7 +67,7 @@ def extract_with_llm(text: str) -> tuple[dict, str]:
     parsed = response.parsed_output
     if parsed is None:
         raise ValueError("LLM returned no parseable output")
-    return parsed.model_dump(), "llm (claude-opus-4-8)"
+    return parsed.model_dump(), f"llm ({EXTRACTOR_MODEL})"
 
 
 # --- Heuristic fallback ----------------------------------------------------
