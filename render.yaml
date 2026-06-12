@@ -1,0 +1,15 @@
+# Render Blueprint - deploys the app as a free web service.
+# In Render: New + > Blueprint > connect this repo > Apply.
+services:
+  - type: web
+    name: relocation-investment-explorer
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/cities
+    autoDeploy: true
+    envVars:
+      - key: ANTHROPIC_API_KEY     # optional: enables LLM listing extraction
+        sync: false                # set the value in the Render dashboard
+      - key: EXTRACTOR_MODEL
+        value: claude-sonnet-4-6

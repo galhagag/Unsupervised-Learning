@@ -22,7 +22,7 @@ from pydantic import BaseModel, Field
 
 from scrapers.common import CITY_ESTIMATES, parse_number, to_listing
 
-MANUAL_FILE = Path(__file__).parent / "data" / "manual_listings.json"
+MANUAL_FILE = Path(os.environ.get("DATA_DIR", Path(__file__).parent / "data")) / "manual_listings.json"
 
 # Sonnet is sufficient for structured extraction and faster/cheaper than
 # Opus; override with EXTRACTOR_MODEL=claude-opus-4-8 for messier inputs.
@@ -166,6 +166,7 @@ def load_manual() -> list:
 def save_manual(listing: dict) -> dict:
     listings = load_manual()
     listings.append(listing)
+    MANUAL_FILE.parent.mkdir(parents=True, exist_ok=True)
     MANUAL_FILE.write_text(json.dumps(listings, indent=2, ensure_ascii=False))
     return listing
 

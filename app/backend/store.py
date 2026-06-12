@@ -7,11 +7,13 @@ seed multiple deals over time.
 """
 
 import json
+import os
 import sqlite3
 import time
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "data" / "investments.db"
+_DATA_DIR = Path(os.environ.get("DATA_DIR", Path(__file__).parent / "data"))
+DB_PATH = _DATA_DIR / "investments.db"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS profile (
@@ -69,6 +71,7 @@ DEFAULT_PROFILE = {
 
 
 def _connect() -> sqlite3.Connection:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)

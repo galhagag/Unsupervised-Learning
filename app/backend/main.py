@@ -6,6 +6,7 @@ scenarios), plus vetted realtor/lawyer recommendations per city.
 """
 
 import json
+import os
 import time
 from pathlib import Path
 
@@ -32,7 +33,9 @@ RESEARCHED = json.loads((DATA_DIR / "researched_listings.json").read_text())
 AREAS = json.loads((DATA_DIR / "areas.json").read_text())
 PLAYBOOKS = json.loads((DATA_DIR / "acquisition_playbooks.json").read_text())
 OBLIGATIONS = json.loads((DATA_DIR / "obligations.json").read_text())
-LIVE_FILE = DATA_DIR / "live_listings.json"
+WRITABLE_DIR = Path(os.environ.get("DATA_DIR", DATA_DIR))
+WRITABLE_DIR.mkdir(parents=True, exist_ok=True)
+LIVE_FILE = WRITABLE_DIR / "live_listings.json"
 
 
 def _listing_by_id(listing_id: str) -> dict | None:

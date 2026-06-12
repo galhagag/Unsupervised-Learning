@@ -13,11 +13,14 @@ database for price-history reference but are flagged in the UI.
 """
 
 import json
+import os
 import sqlite3
 import time
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "data" / "history.db"
+# DATA_DIR lets deployments point writable state at a mounted volume.
+_DATA_DIR = Path(os.environ.get("DATA_DIR", Path(__file__).parent / "data"))
+DB_PATH = _DATA_DIR / "history.db"
 STALE_AFTER_DAYS = 30
 
 SCHEMA = """
@@ -46,6 +49,7 @@ MANUAL_STATUSES = {"sold", "irrelevant", "active"}
 
 
 def _connect() -> sqlite3.Connection:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute(SCHEMA)

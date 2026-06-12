@@ -1,0 +1,13 @@
+.git
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+app/backend/data/history.db
+app/backend/data/investments.db
+app/backend/data/live_listings.json
+app/backend/data/manual_listings.json
+app/backend/tests
+*.pdf
+*.ipynb
+docs

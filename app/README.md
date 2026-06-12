@@ -29,6 +29,8 @@ npm run dev
 
 Production: `npm run build` in `frontend/`, then the backend serves `frontend/dist` at `/`.
 
+Deploying to a free-tier platform (Render / HF Spaces / Cloud Run / Fly): see [`../docs/DEPLOY.md`](../docs/DEPLOY.md) — the repo root has a `Dockerfile`, `render.yaml` and `fly.toml` ready to go.
+
 ## API
 
 | Endpoint | Description |
