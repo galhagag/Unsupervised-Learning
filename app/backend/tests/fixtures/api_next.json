@@ -1,0 +1,58 @@
+{
+  "count": 2647,
+  "totalAds": 2647,
+  "results": [
+    {
+      "realEstate": {
+        "id": 119542876,
+        "title": "Trilocale via Maqueda, Albergheria, Palermo",
+        "price": {"value": 129000, "formattedValue": "€ 129.000", "currency": "EUR"},
+        "properties": [
+          {
+            "surface": "95 m²",
+            "rooms": "3",
+            "bathrooms": "2",
+            "description": "Nel cuore del centro storico, luminoso trilocale ristrutturato al secondo piano con balcone.",
+            "location": {"city": "Palermo", "macrozone": "Albergheria", "province": "PA"},
+            "typologyV2": {"id": 14, "name": "Appartamento"}
+          }
+        ],
+        "contract": "sale",
+        "isNew": false
+      },
+      "seo": {"url": "https://www.immobiliare.it/annunci/119542876/", "title": "Trilocale via Maqueda"}
+    },
+    {
+      "realEstate": {
+        "id": 119601234,
+        "title": "Quadrilocale via Etnea 210, Centro, Catania",
+        "price": {"value": 185000, "formattedValue": "€ 185.000", "currency": "EUR"},
+        "properties": [
+          {
+            "surface": "120 m²",
+            "rooms": "4",
+            "description": "Ampio quadrilocale su via Etnea con doppia esposizione.",
+            "location": {"city": "Catania", "macrozone": "Centro", "province": "CT"},
+            "typologyV2": {"id": 14, "name": "Appartamento"}
+          }
+        ]
+      },
+      "seo": {"url": "https://www.immobiliare.it/annunci/119601234/"}
+    },
+    {
+      "realEstate": {
+        "id": 119990001,
+        "title": "Posto auto via Roma, Palermo",
+        "price": {"value": 15000, "formattedValue": "€ 15.000", "currency": "EUR"},
+        "properties": [
+          {
+            "surface": "12 m²",
+            "location": {"city": "Palermo", "macrozone": "Politeama"},
+            "typologyV2": {"id": 5, "name": "Posto auto"}
+          }
+        ]
+      },
+      "seo": {"url": "https://www.immobiliare.it/annunci/119990001/"}
+    }
+  ]
+}

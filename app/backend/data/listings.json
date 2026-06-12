@@ -1,0 +1,252 @@
+[
+  {
+    "id": "sof-001",
+    "city": "Sofia",
+    "country": "bulgaria",
+    "title": "2-bed apartment in Lozenets, near South Park",
+    "overview": "78 m2 two-bedroom in Sofia's most consistently liquid rental district, 10 min walk to South Park and the metro. 2019 building, low service charge. Strong long-let demand from tech professionals (Lozenets sits next to the office cluster on Cherni Vrah Blvd).",
+    "price_eur": 185000,
+    "size_m2": 78,
+    "expected_monthly_rent_eur": 850,
+    "annual_operating_costs_eur": 1450,
+    "neighborhood": "Lozenets",
+    "highlights": [
+      "Metro within 600 m",
+      "2019 construction, Act 16 issued",
+      "Tenant pool: tech & finance professionals"
+    ],
+    "risks": [
+      "BGN/EUR peg transition to euro adoption (Jan 2026) settled, but watch pricing in EUR",
+      "Service charge increases in managed buildings"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 55,
+      "occupancy_pct": 58,
+      "note": "Lozenets is primarily a long-let district; short-let demand is moderate (business travellers)."
+    }
+  },
+  {
+    "id": "sof-002",
+    "city": "Sofia",
+    "country": "bulgaria",
+    "title": "1-bed near Vitosha Blvd / NDK",
+    "overview": "52 m2 one-bedroom two blocks from Vitosha Boulevard, the city's prime pedestrian artery. Older brick building (1980s) with renovated interior. Works for long lets and is one of the few central micro-locations where short lets also clear well.",
+    "price_eur": 128000,
+    "size_m2": 52,
+    "expected_monthly_rent_eur": 650,
+    "annual_operating_costs_eur": 1100,
+    "neighborhood": "Center / NDK",
+    "highlights": [
+      "Prime walkable center",
+      "Entry price under EUR 130k",
+      "Dual strategy: long let or short let"
+    ],
+    "risks": [
+      "Brick building, no elevator",
+      "Short-let regulation tightening in central Sofia"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 68,
+      "occupancy_pct": 70,
+      "note": "Vitosha Blvd / NDK is the strongest short-let micro-location in Sofia."
+    }
+  },
+  {
+    "id": "sof-003",
+    "city": "Sofia",
+    "country": "bulgaria",
+    "title": "New-build 2-bed in Mladost 4, business park corridor",
+    "overview": "85 m2 off-plan completion Q4 2026 next to Business Park Sofia. Developer pricing still below Lozenets. The strongest pure-yield play of the three Sofia entries thanks to corporate tenant demand and a lower entry price per m2.",
+    "price_eur": 142000,
+    "size_m2": 85,
+    "expected_monthly_rent_eur": 780,
+    "annual_operating_costs_eur": 1300,
+    "neighborhood": "Mladost 4",
+    "highlights": [
+      "Highest projected gross yield in Sofia set",
+      "Metro line 1 on the doorstep",
+      "New build: 10-yr structural warranty"
+    ],
+    "risks": [
+      "Off-plan completion risk - use staged payments via lawyer",
+      "Mladost has heavy new supply pipeline"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 48,
+      "occupancy_pct": 55,
+      "note": "Business-park corridor: weekday corporate stays, weak weekends."
+    }
+  },
+  {
+    "id": "ath-001",
+    "city": "Athens",
+    "country": "greece",
+    "title": "Renovated 2-bed in Koukaki, Acropolis foothills",
+    "overview": "68 m2 fully renovated apartment in Koukaki, repeatedly ranked among Europe's strongest short-let micro-markets and equally liquid for long lets to professionals. 8 min walk to the Acropolis Museum and metro.",
+    "price_eur": 235000,
+    "size_m2": 68,
+    "expected_monthly_rent_eur": 1050,
+    "annual_operating_costs_eur": 2100,
+    "neighborhood": "Koukaki",
+    "highlights": [
+      "Blue-chip Athens micro-location",
+      "Renovated - no capex needed",
+      "Deep tenant and resale market"
+    ],
+    "risks": [
+      "New short-let licence restrictions in central Athens (registration freeze zones)",
+      "ENFIA and municipal fees rising with zone values"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": false,
+      "note": "Koukaki sits in central Athens District 1 where NEW short-let (AMA) registrations are frozen until 31 Dec 2026 - a new buyer cannot legally short-let. Modelled as long let only."
+    }
+  },
+  {
+    "id": "ath-002",
+    "city": "Athens",
+    "country": "greece",
+    "title": "Value-add 3-bed in Kypseli",
+    "overview": "92 m2 third-floor apartment in Kypseli, the gentrification story of central Athens - prices still 40-50% below Koukaki with the strongest rent growth in the city. Needs a EUR 25-30k renovation (already reflected in the analysis price).",
+    "price_eur": 165000,
+    "size_m2": 92,
+    "expected_monthly_rent_eur": 900,
+    "annual_operating_costs_eur": 1800,
+    "neighborhood": "Kypseli",
+    "highlights": [
+      "Lowest price per m2 in central Athens",
+      "Renovation upside baked into entry price",
+      "Large units rent fast to families/sharers"
+    ],
+    "risks": [
+      "Gentrification timeline uncertainty",
+      "Older building (1970s) - check seismic/engineering report"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 62,
+      "occupancy_pct": 64,
+      "note": "Kypseli (District 6) is outside the central-Athens AMA registration freeze."
+    }
+  },
+  {
+    "id": "ath-003",
+    "city": "Athens",
+    "country": "greece",
+    "title": "Seafront 2-bed in Glyfada, Athens Riviera",
+    "overview": "75 m2 apartment 400 m from the Glyfada marina, in the path of the Ellinikon mega-project which is re-rating the whole southern coast. Lower yield, strongest capital-appreciation thesis of the Athens set.",
+    "price_eur": 340000,
+    "size_m2": 75,
+    "expected_monthly_rent_eur": 1350,
+    "annual_operating_costs_eur": 2600,
+    "neighborhood": "Glyfada",
+    "highlights": [
+      "Ellinikon project tailwind",
+      "Premium tenant profile",
+      "Strong resale liquidity"
+    ],
+    "risks": [
+      "Yield compression - this is an appreciation play",
+      "Note: Golden Visa in Attica now requires EUR 800k single asset, this does not qualify"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 115,
+      "occupancy_pct": 58,
+      "note": "Strong summer season on the Riviera; winter occupancy soft. Glyfada is outside the central-Athens freeze."
+    }
+  },
+  {
+    "id": "sic-001",
+    "city": "Sicily",
+    "country": "italy",
+    "title": "Restored 2-bed in Palermo historic centre (Kalsa)",
+    "overview": "70 m2 restored apartment in La Kalsa, Palermo's old town, 5 min from the marina. Palermo offers the lowest entry prices of any major Italian city and rising tourist and student demand. Cedolare secca keeps rental taxation flat and simple.",
+    "price_eur": 98000,
+    "size_m2": 70,
+    "expected_monthly_rent_eur": 580,
+    "annual_operating_costs_eur": 1500,
+    "neighborhood": "Palermo - La Kalsa",
+    "highlights": [
+      "Sub-EUR 100k entry",
+      "Italy CGT-free after 5 years of ownership",
+      "Strong short-let season Apr-Oct"
+    ],
+    "risks": [
+      "Older building stock - survey essential",
+      "Palermo short-let registration (CIN code) now mandatory"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 78,
+      "occupancy_pct": 60,
+      "note": "Apr-Oct season carries the year. CIN registration code required."
+    }
+  },
+  {
+    "id": "sic-002",
+    "city": "Sicily",
+    "country": "italy",
+    "title": "3-bed near University of Catania",
+    "overview": "95 m2 apartment between Piazza Universita and Via Etnea. Catania is Sicily's economic engine (ST Microelectronics expansion, 'Etna Valley' tech cluster) with reliable student and young-professional rental demand year round.",
+    "price_eur": 115000,
+    "size_m2": 95,
+    "expected_monthly_rent_eur": 640,
+    "annual_operating_costs_eur": 1600,
+    "neighborhood": "Catania - Centro",
+    "highlights": [
+      "Year-round tenant demand (students + tech)",
+      "Etna Valley employment growth",
+      "Room-by-room letting upside"
+    ],
+    "risks": [
+      "Seismic zone - verify building class",
+      "Slower resale market than Palermo centre"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 64,
+      "occupancy_pct": 58,
+      "note": "Less touristy than Palermo; steadier from university/business visitors. CIN required."
+    }
+  },
+  {
+    "id": "sic-003",
+    "city": "Sicily",
+    "country": "italy",
+    "title": "1-bed on Ortigia island, Syracuse",
+    "overview": "55 m2 apartment on Ortigia, the baroque island heart of Syracuse and Sicily's premium short-let market. Highest nightly rates on the island outside Taormina; modelled here conservatively as a long let.",
+    "price_eur": 175000,
+    "size_m2": 55,
+    "expected_monthly_rent_eur": 850,
+    "annual_operating_costs_eur": 1900,
+    "neighborhood": "Syracuse - Ortigia",
+    "highlights": [
+      "Premium location, UNESCO old town",
+      "Short-let upside over modelled long-let rent",
+      "Strong international resale audience"
+    ],
+    "risks": [
+      "Seasonality if run as short let",
+      "Humidity/maintenance in historic buildings"
+    ],
+    "data_source": "sample",
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 125,
+      "occupancy_pct": 64,
+      "note": "Premium short-let market; highest nightly rates outside Taormina. CIN required."
+    }
+  }
+]

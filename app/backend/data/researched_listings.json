@@ -1,0 +1,188 @@
+[
+  {
+    "id": "stone-hard.com-dev2467",
+    "city": "Sofia",
+    "country": "bulgaria",
+    "title": "New-build apartment, Krasno Selo (64 m2, completion mid-2026)",
+    "overview": "New development in Krasno Selo, units from 63.68 m2 at 2,188-2,880 EUR/m2, completion mid-2026. Priced at the development's entry rate (2,188 EUR/m2).",
+    "price_eur": 139300,
+    "size_m2": 64,
+    "expected_monthly_rent_eur": 704,
+    "annual_operating_costs_eur": 1672,
+    "neighborhood": "Krasno Selo",
+    "highlights": [
+      "Real listing researched 2026-06-10 via web search",
+      "Price basis: listed (entry unit at 2,188 EUR/m2 published by developer)"
+    ],
+    "risks": [
+      "Rent/operating costs are city-level estimates",
+      "Verify current availability and price on the source site"
+    ],
+    "data_source": "stone-hard.com (researched)",
+    "listing_url": "https://www.stone-hard.com/bulgaria/region-sofia/sofia/apartments-various-types/development-2467-apartments-various-types-in-sofia.html",
+    "estimated": true,
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 61,
+      "occupancy_pct": 60,
+      "note": "Estimated short-let economics. For Athens: verify the address is OUTSIDE central districts 1-3 (AMA registration freeze until end-2026)."
+    },
+    "price_basis": "listed (entry unit at 2,188 EUR/m2 published by developer)",
+    "researched_at": "2026-06-10"
+  },
+  {
+    "id": "bulgarianproperties.com-loz-140",
+    "city": "Sofia",
+    "country": "bulgaria",
+    "title": "4-bed duplex near University of Architecture, Lozenets (140 m2)",
+    "overview": "Four-bedroom apartment on two levels near the University of Architecture in Lozenets, listed at EUR 466,000-485,000 (lower bound used).",
+    "price_eur": 466000,
+    "size_m2": 140,
+    "expected_monthly_rent_eur": 1540,
+    "annual_operating_costs_eur": 5592,
+    "neighborhood": "Lozenets",
+    "highlights": [
+      "Real listing researched 2026-06-10 via web search",
+      "Price basis: listed"
+    ],
+    "risks": [
+      "Rent/operating costs are city-level estimates",
+      "Verify current availability and price on the source site"
+    ],
+    "data_source": "bulgarianproperties.com (researched)",
+    "listing_url": "https://www.bulgarianproperties.com/sofia_property/lozenets/index.html",
+    "estimated": true,
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 133,
+      "occupancy_pct": 60,
+      "note": "Estimated short-let economics. For Athens: verify the address is OUTSIDE central districts 1-3 (AMA registration freeze until end-2026)."
+    },
+    "price_basis": "listed",
+    "researched_at": "2026-06-10"
+  },
+  {
+    "id": "spitogatos.gr-kyp-53",
+    "city": "Athens",
+    "country": "greece",
+    "title": "5th-floor apartment, Kypseli (53 m2)",
+    "overview": "53 m2 apartment on the 5th floor in Kypseli, listed at EUR 148,000 (2,792 EUR/m2 vs district average 2,147 EUR/m2, March 2026, +8.5% y/y).",
+    "price_eur": 148000,
+    "size_m2": 53,
+    "expected_monthly_rent_eur": 662,
+    "annual_operating_costs_eur": 1776,
+    "neighborhood": "Kypseli",
+    "highlights": [
+      "Real listing researched 2026-06-10 via web search",
+      "Price basis: listed"
+    ],
+    "risks": [
+      "Rent/operating costs are city-level estimates",
+      "Verify current availability and price on the source site"
+    ],
+    "data_source": "spitogatos.gr (researched)",
+    "listing_url": "https://www.spitogatos.gr/en/for_sale-apartments/kipseli",
+    "estimated": true,
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 56,
+      "occupancy_pct": 62,
+      "note": "Estimated short-let economics. For Athens: verify the address is OUTSIDE central districts 1-3 (AMA registration freeze until end-2026)."
+    },
+    "price_basis": "listed",
+    "researched_at": "2026-06-10"
+  },
+  {
+    "id": "spitogatos.gr-kyp-6345",
+    "city": "Athens",
+    "country": "greece",
+    "title": "Renovated 1st-floor apartment, Kypselis Avenue (63 m2)",
+    "overview": "63.45 m2 first-floor apartment on Kypselis Avenue, fully renovated 2026, near the upcoming metro station. Listing price not shown in search excerpt - PRICED AT the district average of 2,147 EUR/m2 (March 2026).",
+    "price_eur": 136000,
+    "size_m2": 63,
+    "expected_monthly_rent_eur": 788,
+    "annual_operating_costs_eur": 1632,
+    "neighborhood": "Kypseli",
+    "highlights": [
+      "Real listing researched 2026-06-10 via web search",
+      "Price basis: estimated from Kypseli district average 2,147 EUR/m2 (March 2026)"
+    ],
+    "risks": [
+      "Rent/operating costs are city-level estimates",
+      "Verify current availability and price on the source site"
+    ],
+    "data_source": "spitogatos.gr (researched)",
+    "listing_url": "https://www.spitogatos.gr/en/for_sale-apartments/kipseli",
+    "estimated": true,
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 66,
+      "occupancy_pct": 62,
+      "note": "Estimated short-let economics. For Athens: verify the address is OUTSIDE central districts 1-3 (AMA registration freeze until end-2026)."
+    },
+    "price_basis": "estimated from Kypseli district average 2,147 EUR/m2 (March 2026)",
+    "researched_at": "2026-06-10"
+  },
+  {
+    "id": "immobiliare.it-cat-ursino-145",
+    "city": "Sicily",
+    "country": "italy",
+    "title": "Apartment near Castello Ursino, Catania historic centre (145 m2)",
+    "overview": "145 m2 apartment in Catania's historic centre near Castello Ursino, listed at EUR 195,000 (1,345 EUR/m2). Large-format value play; suits room-by-room or family long lets.",
+    "price_eur": 195000,
+    "size_m2": 145,
+    "expected_monthly_rent_eur": 1232,
+    "annual_operating_costs_eur": 2340,
+    "neighborhood": "Catania - Castello Ursino",
+    "highlights": [
+      "Real listing researched 2026-06-10 via web search",
+      "Price basis: listed"
+    ],
+    "risks": [
+      "Rent/operating costs are city-level estimates",
+      "Verify current availability and price on the source site"
+    ],
+    "data_source": "immobiliare.it (researched)",
+    "listing_url": "https://www.immobiliare.it/en/vendita-appartamenti/catania/",
+    "estimated": true,
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 160,
+      "occupancy_pct": 58,
+      "note": "Estimated short-let economics. For Athens: verify the address is OUTSIDE central districts 1-3 (AMA registration freeze until end-2026)."
+    },
+    "price_basis": "listed",
+    "researched_at": "2026-06-10"
+  },
+  {
+    "id": "idealista.it-pal-kalsa-80",
+    "city": "Sicily",
+    "country": "italy",
+    "title": "Apartment near Piazza Kalsa / Botanical Garden, Palermo (80 m2)",
+    "overview": "80 m2 apartment in an early-20th-century building near the Botanical Garden, Piazza Kalsa and the Foro Italico promenade. Listing price not shown in search excerpt - PRICED AT ~1,300 EUR/m2, mid-range for Centro Storico (447 active listings).",
+    "price_eur": 104000,
+    "size_m2": 80,
+    "expected_monthly_rent_eur": 680,
+    "annual_operating_costs_eur": 1248,
+    "neighborhood": "Palermo - Kalsa",
+    "highlights": [
+      "Real listing researched 2026-06-10 via web search",
+      "Price basis: estimated from Palermo Centro Storico mid-range ~1,300 EUR/m2"
+    ],
+    "risks": [
+      "Rent/operating costs are city-level estimates",
+      "Verify current availability and price on the source site"
+    ],
+    "data_source": "idealista.it (researched)",
+    "listing_url": "https://www.idealista.it/en/vendita-case/palermo/centro-storico/tribunali-kalsa/",
+    "estimated": true,
+    "short_let": {
+      "allowed": true,
+      "nightly_rate_eur": 88,
+      "occupancy_pct": 58,
+      "note": "Estimated short-let economics. For Athens: verify the address is OUTSIDE central districts 1-3 (AMA registration freeze until end-2026)."
+    },
+    "price_basis": "estimated from Palermo Centro Storico mid-range ~1,300 EUR/m2",
+    "researched_at": "2026-06-10"
+  }
+]

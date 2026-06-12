@@ -1,0 +1,127 @@
+{
+  "methodology": "Entries are compiled from public, non-sponsored sources: legal directories (Lawzana, Advocate Abroad), firm track record with international buyers, and English-language capability. No entry is a paid placement and none has any relationship with this app. Always verify independence: your lawyer must NOT be recommended by, or share fees with, the selling agent or developer. Treat this list as a starting shortlist, not an endorsement.",
+  "disclaimer": "Recommendations are informational only. Interview at least two professionals per role, ask for references from past foreign clients, and confirm bar/registry membership before engaging.",
+  "professionals": [
+    {
+      "id": "sof-law-1",
+      "city": "Sofia",
+      "type": "lawyer",
+      "name": "LexSofia",
+      "languages": ["English", "Bulgarian"],
+      "specialty": "Real estate acquisition, due diligence and immigration for foreign buyers",
+      "why_recommended": "Sofia-based firm with a long-standing dedicated foreign-buyer real estate practice; publishes detailed English-language guidance on Bulgarian property law.",
+      "source_url": "https://lexsofia.com/",
+      "independent_of_agents": true
+    },
+    {
+      "id": "sof-law-2",
+      "city": "Sofia",
+      "type": "lawyer",
+      "name": "Advocate Abroad - vetted Sofia property lawyers",
+      "languages": ["English", "Bulgarian"],
+      "specialty": "Property purchase representation, escrow and title checks",
+      "why_recommended": "Directory that pre-vets English-speaking lawyers and publishes verified client reviews - a useful unbiased cross-check against any single firm's marketing.",
+      "source_url": "https://advocateabroad.com/bulgaria/lawyers/sofia-city/sofia/",
+      "independent_of_agents": true
+    },
+    {
+      "id": "sof-re-1",
+      "city": "Sofia",
+      "type": "realtor",
+      "name": "Sofia Property Broker",
+      "languages": ["English", "French", "Spanish", "Italian", "Bulgarian"],
+      "specialty": "Buyer-side brokerage focused on central Sofia districts",
+      "why_recommended": "Positions itself as an independent, buyer-side agent not tied to developer stock - the key independence test for a realtor in a market dominated by listing-side agencies.",
+      "source_url": "https://sofiapropertybroker.com/sofia-real-estate-agent/",
+      "independent_of_agents": false
+    },
+    {
+      "id": "sof-re-2",
+      "city": "Sofia",
+      "type": "realtor",
+      "name": "Bulgarian Properties",
+      "languages": ["English", "Bulgarian", "Russian"],
+      "specialty": "Largest national listing coverage incl. Sofia new-builds",
+      "why_recommended": "Broadest inventory in the country - useful for price discovery and comparables even if you transact through a buyer-side agent.",
+      "source_url": "https://www.bulgarianproperties.com/",
+      "independent_of_agents": false
+    },
+    {
+      "id": "ath-law-1",
+      "city": "Athens",
+      "type": "lawyer",
+      "name": "Varnavas Law Firm",
+      "languages": ["English", "Greek"],
+      "specialty": "Real estate acquisitions for foreign investors; Golden Visa department since 2013",
+      "why_recommended": "40+ year real estate practice with a core focus on representing foreign buyers; consistently positive independent client reviews citing experience and responsiveness.",
+      "source_url": "https://varnavas.gr/",
+      "independent_of_agents": true
+    },
+    {
+      "id": "ath-law-2",
+      "city": "Athens",
+      "type": "lawyer",
+      "name": "Lawzana - top-rated Athens real estate lawyers",
+      "languages": ["English", "Greek"],
+      "specialty": "Comparative directory with verified reviews",
+      "why_recommended": "Aggregates verified client reviews across Athens real-estate lawyers - the most neutral starting point for building a shortlist and cross-checking any referral.",
+      "source_url": "https://lawzana.com/golden-visa-lawyers/greece",
+      "independent_of_agents": true
+    },
+    {
+      "id": "ath-re-1",
+      "city": "Athens",
+      "type": "realtor",
+      "name": "Spitogatos / Spiti360 listings + independent buyer's agent",
+      "languages": ["English", "Greek"],
+      "specialty": "Spitogatos is Greece's dominant listing portal - use it for unbiased price discovery",
+      "why_recommended": "In Athens most agencies represent sellers. The unbiased route: research prices yourself on the dominant portal, then engage a fee-based buyer's agent rather than relying on a seller's agent's advice.",
+      "source_url": "https://www.spitogatos.gr/en",
+      "independent_of_agents": false
+    },
+    {
+      "id": "sic-law-1",
+      "city": "Sicily",
+      "type": "lawyer",
+      "name": "Palmigiano Law Firm (Palermo)",
+      "languages": ["English", "French", "Italian"],
+      "specialty": "Independent real estate advice for international clients",
+      "why_recommended": "Established Palermo firm (founded 1954) that explicitly offers independent buyer-side advice in English - independence from the agent/notary chain is the critical safeguard in Italian transactions.",
+      "source_url": "https://www.palmigianolawfirm.com/italian-real-estate-lawyer/",
+      "independent_of_agents": true
+    },
+    {
+      "id": "sic-law-2",
+      "city": "Sicily",
+      "type": "lawyer",
+      "name": "Dimarco & Partners (Catania)",
+      "languages": ["English", "Italian"],
+      "specialty": "Property and corporate law for foreign individuals in eastern Sicily",
+      "why_recommended": "English-speaking Catania firm serving foreign buyers - relevant if you target the Catania/Etna Valley listings.",
+      "source_url": "https://www.lawyer-italy.org/lawyer-in-catania.html",
+      "independent_of_agents": true
+    },
+    {
+      "id": "sic-re-1",
+      "city": "Sicily",
+      "type": "realtor",
+      "name": "Property in Sicily",
+      "languages": ["English", "Italian"],
+      "specialty": "International-buyer agency covering the whole island incl. post-purchase support",
+      "why_recommended": "Long-running agency specialised in foreign buyers with post-purchase renovation support; cross-check any listing price on Immobiliare.it before offering.",
+      "source_url": "https://www.property-in-sicily.estate/",
+      "independent_of_agents": false
+    },
+    {
+      "id": "sic-re-2",
+      "city": "Sicily",
+      "type": "realtor",
+      "name": "Immobiliare.it (portal) + local geometra for survey",
+      "languages": ["English", "Italian"],
+      "specialty": "Italy's dominant listing portal for unbiased price discovery",
+      "why_recommended": "Use the portal for comparables and always commission an independent geometra/surveyor - Sicilian historic stock frequently has cadastral irregularities that a seller's agent will not volunteer.",
+      "source_url": "https://www.immobiliare.it/en/",
+      "independent_of_agents": false
+    }
+  ]
+}

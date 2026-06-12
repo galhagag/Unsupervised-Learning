@@ -1,0 +1,5 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+curl_cffi>=0.7     # browser TLS impersonation - required for the scrapers
+httpx>=0.27        # fallback HTTP client only
+pytest>=8          # parser test suite (tests/)

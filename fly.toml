@@ -1,0 +1,27 @@
+# Fly.io config. Fly has no permanent free tier for new orgs (pay-as-you-go,
+# a tiny app like this runs ~$2-3/mo, scale-to-zero keeps it minimal), but it
+# is the cheapest option WITH a persistent volume so deals/profile survive
+# restarts. Deploy: fly launch --copy-config && fly volumes create data --size 1 && fly deploy
+app = "relocation-investment-explorer"
+primary_region = "fra"
+
+[build]
+
+[env]
+  DATA_DIR = "/data"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[mounts]]
+  source = "data"
+  destination = "/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

@@ -1,0 +1,118 @@
+{
+  "as_of": "2026-06",
+  "note": "Scores are 1-10 within each city's context. price_eur_m2 is the approximate mid-market asking benchmark used for the value score.",
+  "areas": [
+    {
+      "city": "Sofia", "name": "Lozenets", "aliases": ["Lozenets"],
+      "verdict": "Core buy",
+      "scores": {"location": 9, "growth": 7, "liquidity": 9},
+      "price_eur_m2": 2700,
+      "summary": "The most consistently liquid district: embassy/tech-professional tenant pool, South Park, metro. Pays for itself in liquidity and rentability rather than headline yield.",
+      "watch_outs": ["Premium entry prices compress yield", "Older brick stock needs renovation budgets"]
+    },
+    {
+      "city": "Sofia", "name": "Ivan Vazov", "aliases": ["Ivan Vazov"],
+      "verdict": "Core buy",
+      "scores": {"location": 8, "growth": 7, "liquidity": 8},
+      "price_eur_m2": 2600,
+      "summary": "Quiet, central, next to South Park and NDK; vacancy 2-3%. Smaller market than Lozenets but the same tenant quality.",
+      "watch_outs": ["Thin supply - patience needed to buy well"]
+    },
+    {
+      "city": "Sofia", "name": "Center / NDK-Vitosha", "aliases": ["Center", "NDK", "Vitosha"],
+      "verdict": "Buy for short-let optionality",
+      "scores": {"location": 9, "growth": 6, "liquidity": 8},
+      "price_eur_m2": 2800,
+      "summary": "The only Sofia micro-market where short lets clear strongly year-round (Vitosha Blvd corridor). Dual-strategy flexibility is the draw.",
+      "watch_outs": ["Short-let regulation tightening centrally", "1980s brick walk-ups: check structure and no-elevator discount"]
+    },
+    {
+      "city": "Sofia", "name": "Krasno Selo", "aliases": ["Krasno Selo"],
+      "verdict": "Value pick",
+      "scores": {"location": 7, "growth": 8, "liquidity": 7},
+      "price_eur_m2": 2300,
+      "summary": "Metro line 3 re-rated the district; new-build pipeline at 2,200-2,900 EUR/m2 still ~15% below Lozenets for near-identical commutes.",
+      "watch_outs": ["Quality varies sharply between developments - check the developer's delivery record"]
+    },
+    {
+      "city": "Sofia", "name": "Mladost", "aliases": ["Mladost"],
+      "verdict": "Yield pick",
+      "scores": {"location": 6, "growth": 7, "liquidity": 8},
+      "price_eur_m2": 1950,
+      "summary": "Business-park corridor: the strongest pure rental yields in Sofia from corporate tenants, at the cost of prestige and growth ceiling.",
+      "watch_outs": ["Heavy new supply pipeline caps rent growth", "Weekend/leisure short-let demand is weak"]
+    },
+    {
+      "city": "Athens", "name": "Koukaki / Acropolis", "aliases": ["Koukaki", "Acropolis"],
+      "verdict": "Blue chip - long let only for new buyers",
+      "scores": {"location": 10, "growth": 6, "liquidity": 9},
+      "price_eur_m2": 3500,
+      "summary": "Europe-class micro-location with the deepest resale market in central Athens. The AMA freeze (Districts 1-3, until end-2026) blocks new short-let registrations, so underwrite as a long let.",
+      "watch_outs": ["New short-let registrations frozen until 31 Dec 2026", "Priced ~60% above Kypseli"]
+    },
+    {
+      "city": "Athens", "name": "Pagrati", "aliases": ["Pagrati", "Pagkrati"],
+      "verdict": "Balanced core buy",
+      "scores": {"location": 8, "growth": 8, "liquidity": 9},
+      "price_eur_m2": 2900,
+      "summary": "The best risk-adjusted balance in central Athens: walkable to the centre, strong professional long-let demand, outside the AMA freeze zone, steady gentrification anchored by the Goulandris museum.",
+      "watch_outs": ["Prices already moved - the deep-value window has closed"]
+    },
+    {
+      "city": "Athens", "name": "Kypseli", "aliases": ["Kypseli", "Kipseli"],
+      "verdict": "Growth/value pick",
+      "scores": {"location": 6, "growth": 9, "liquidity": 7},
+      "price_eur_m2": 2150,
+      "summary": "The gentrification story of central Athens: asking prices +8.5% y/y (Mar 2026) yet still ~40% below Koukaki. Upcoming metro station strengthens the thesis. Large 60-100 m2 stock suits families and sharers.",
+      "watch_outs": ["Block-by-block variance - walk the street at night before offering", "1960s-70s stock: budget seismic/engineering checks"]
+    },
+    {
+      "city": "Athens", "name": "Glyfada / Riviera", "aliases": ["Glyfada", "Riviera"],
+      "verdict": "Appreciation play",
+      "scores": {"location": 9, "growth": 9, "liquidity": 8},
+      "price_eur_m2": 4500,
+      "summary": "The Ellinikon mega-project is re-rating the whole southern coast. Lowest yields in the Athens set but the strongest capital-growth thesis; premium tenant pool.",
+      "watch_outs": ["Yield compression - cash flow barely covers costs at current prices", "Ellinikon delivery timeline risk"]
+    },
+    {
+      "city": "Athens", "name": "Ampelokipi", "aliases": ["Ampelokipi", "Erythros"],
+      "verdict": "Steady long-let workhorse",
+      "scores": {"location": 7, "growth": 7, "liquidity": 8},
+      "price_eur_m2": 2400,
+      "summary": "Metro-served, dense employment (hospitals, offices, embassies). Unglamorous, dependable long-let demand and fair entry prices.",
+      "watch_outs": ["Limited short-let upside", "Traffic-heavy main arteries - prefer side streets"]
+    },
+    {
+      "city": "Sicily", "name": "Palermo - Kalsa / Centro Storico", "aliases": ["Kalsa", "La Kalsa", "Centro Storico", "Palermo"],
+      "verdict": "Growth/value pick",
+      "scores": {"location": 8, "growth": 8, "liquidity": 6},
+      "price_eur_m2": 1300,
+      "summary": "Lowest entry prices of any major Italian city centre with rising tourism; 447 active listings give real choice. Italy's 5-year CGT exemption pairs well with a renovate-and-hold plan.",
+      "watch_outs": ["Cadastral irregularities endemic - independent geometra survey is non-negotiable", "Resale liquidity thinner than mainland cities"]
+    },
+    {
+      "city": "Sicily", "name": "Palermo - Politeama / Liberta", "aliases": ["Politeama", "Liberta", "Libertà"],
+      "verdict": "Core buy (Palermo)",
+      "scores": {"location": 8, "growth": 6, "liquidity": 8},
+      "price_eur_m2": 1800,
+      "summary": "Palermo's established prime: liberty-era buildings, the city's best long-let tenant pool and the easiest resale. Less upside than Kalsa, far less project risk.",
+      "watch_outs": ["Premium over Centro Storico without the same growth story"]
+    },
+    {
+      "city": "Sicily", "name": "Catania - Centro / Via Etnea", "aliases": ["Catania", "Etnea", "Castello Ursino"],
+      "verdict": "Yield pick",
+      "scores": {"location": 7, "growth": 7, "liquidity": 6},
+      "price_eur_m2": 1350,
+      "summary": "Sicily's economic engine: university plus the 'Etna Valley' tech cluster (ST Microelectronics expansion) gives year-round tenant demand the tourist towns lack.",
+      "watch_outs": ["Seismic zone - verify the building's structural class", "Slower resale than Palermo's centre"]
+    },
+    {
+      "city": "Sicily", "name": "Syracuse - Ortigia", "aliases": ["Ortigia", "Syracuse"],
+      "verdict": "Premium short-let play",
+      "scores": {"location": 9, "growth": 7, "liquidity": 7},
+      "price_eur_m2": 3000,
+      "summary": "The strongest nightly rates in Sicily outside Taormina, with an international resale audience. A short-let business first, a property second.",
+      "watch_outs": ["Seasonality: Apr-Oct carries the year", "Historic-building maintenance (humidity, salt air)"]
+    }
+  ]
+}

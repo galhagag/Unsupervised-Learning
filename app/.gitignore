@@ -1,0 +1,9 @@
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.venv/
+backend/data/live_listings.json
+backend/data/history.db
+backend/data/investments.db
+backend/data/manual_listings.json
