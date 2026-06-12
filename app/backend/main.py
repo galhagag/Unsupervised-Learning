@@ -5,13 +5,16 @@ per-scenario financial analysis (including the move-back-to-Israel tax
 scenarios), plus vetted realtor/lawyer recommendations per city.
 """
 
+import base64
 import json
 import os
+import secrets
 import time
 from pathlib import Path
 
 from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 
 import extractor
@@ -67,6 +70,40 @@ app = FastAPI(title="Relocation Investment Explorer",
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"],
                    allow_methods=["*"], allow_headers=["*"])
+
+# ---- Authentication --------------------------------------------------------
+# HTTP Basic over the whole app (UI + API). Enabled when AUTH_PASSWORD is
+# set; without it the app runs open (local dev, tests). Credentials live in
+# environment variables - never commit a password to the repo.
+AUTH_USERNAME = os.environ.get("AUTH_USERNAME", "gal")
+AUTH_PASSWORD = os.environ.get("AUTH_PASSWORD", "")
+AUTH_EXEMPT = {"/api/health"}        # platform health checks can't send creds
+
+
+def _credentials_ok(header: str) -> bool:
+    if not header.startswith("Basic "):
+        return False
+    try:
+        user, _, pwd = base64.b64decode(header[6:]).decode("utf-8").partition(":")
+    except Exception:
+        return False
+    return (secrets.compare_digest(user, AUTH_USERNAME)
+            and secrets.compare_digest(pwd, AUTH_PASSWORD))
+
+
+@app.middleware("http")
+async def basic_auth(request, call_next):
+    if AUTH_PASSWORD and request.url.path not in AUTH_EXEMPT:
+        if not _credentials_ok(request.headers.get("authorization", "")):
+            return Response(
+                status_code=401, content="Authentication required",
+                headers={"WWW-Authenticate": 'Basic realm="Relocation Investment Explorer"'})
+    return await call_next(request)
+
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "auth_enabled": bool(AUTH_PASSWORD)}
 
 # Sample closed entries so the history view demonstrates relevance tracking.
 HISTORICAL_EXAMPLES = [

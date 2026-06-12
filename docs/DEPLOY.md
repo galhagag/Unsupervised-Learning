@@ -12,9 +12,11 @@ at the repo root.
    persistent disk (Render free, HF Spaces free) reset that on every
    redeploy/restart. The curated/researched listings and all analysis are
    unaffected — they're baked into the image.
-2. **There is no login.** Anyone with the URL can read and edit your profile
-   and deals. Prefer a *private* Hugging Face Space (free access control) or
-   keep the URL unguessable and personal.
+2. **Login is built in (HTTP Basic).** Set `AUTH_USERNAME` (default `gal`)
+   and `AUTH_PASSWORD` as environment variables on the platform - the browser
+   prompts for them on first visit. If `AUTH_PASSWORD` is unset the app runs
+   open, so always set it on a public deployment. Never commit the password
+   to the repo; `/api/health` stays open for platform health checks.
 
 ## Option A — Render (easiest, fully free)
 
@@ -67,7 +69,7 @@ deal stages and ledger to survive restarts:
 ```bash
 fly launch --copy-config --no-deploy     # uses fly.toml at the repo root
 fly volumes create data --size 1 --region fra
-fly secrets set ANTHROPIC_API_KEY=sk-ant-...
+fly secrets set AUTH_PASSWORD=<your-password> ANTHROPIC_API_KEY=sk-ant-...
 fly deploy
 ```
 
@@ -80,6 +82,8 @@ keeps the bill near the floor.
 |---|---|---|
 | `PORT` | injected by platform | Listen port (defaults to 8000) |
 | `DATA_DIR` | no (default `/data`) | Writable state: SQLite DBs, manual/live listings |
+| `AUTH_USERNAME` | no (default `gal`) | Basic-auth username |
+| `AUTH_PASSWORD` | **yes on public deployments** | Basic-auth password; unset = app runs open |
 | `ANTHROPIC_API_KEY` | no | Enables Claude extraction for pasted listings |
 | `EXTRACTOR_MODEL` | no (default `claude-sonnet-4-6`) | Extraction model override |
 | `SCRAPER_PROXY` | no | Proxy for portal scrapers if the host IP gets blocked |
