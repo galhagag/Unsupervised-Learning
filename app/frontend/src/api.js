@@ -82,6 +82,16 @@ export const fetchAlerts = () => get('/alerts')
 // Phase 4: market intelligence
 export const fetchFx = () => get('/fx')
 export const fetchPriceChanges = () => get('/price-changes')
+
+// Smarter decisions + paste extraction
+export const fetchTiming = (id) => get(`/opportunities/${id}/timing`)
+export const fetchMonteCarlo = (id, draws = 300) => get(`/opportunities/${id}/montecarlo`, { draws })
+export const extractListing = (text, city, save) => post('/listings/extract', { text, city, save })
+export const deleteManualListing = async (id) => {
+  const res = await fetch(`${BASE}/listings/manual/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error((await res.json()).detail || res.statusText)
+  return res.json()
+}
 export const fetchHistory = (city, includeIrrelevant) =>
   get('/history', { city, include_irrelevant: includeIrrelevant })
 export const setHistoryStatus = async (id, status, note = '') => {

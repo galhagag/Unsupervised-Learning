@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { fetchOpportunities, fetchScenarios, fetchFullAnalysis, fetchLiveStatus, refreshListings, fetchProjection, fetchMemo, createDeal } from './api.js'
+import { fetchOpportunities, fetchScenarios, fetchFullAnalysis, fetchLiveStatus, refreshListings, fetchProjection, fetchMemo, createDeal, fetchTiming, fetchMonteCarlo } from './api.js'
 import CityFilter from './CityFilter.jsx'
 import AreasPanel from './AreasPanel.jsx'
+import AddListingPanel from './AddListingPanel.jsx'
 
 const eur = (n) => `€${Number(n).toLocaleString()}`
 
@@ -99,9 +100,9 @@ export default function OpportunitiesTab({ city, setCity }) {
           </>
         )}
         <span className="city-filter">
-          {['all', 'sample', 'researched', 'live'].map((s) => (
+          {['all', 'sample', 'researched', 'live', 'manual'].map((s) => (
             <button key={s} className={source === s ? 'chip active' : 'chip'} onClick={() => setSource(s)}>
-              {s === 'all' ? 'All data' : s === 'sample' ? 'Curated' : s === 'researched' ? 'Researched' : 'Live'}
+              {{ all: 'All data', sample: 'Curated', researched: 'Researched', live: 'Live', manual: 'My listings' }[s]}
             </button>
           ))}
         </span>
@@ -123,6 +124,7 @@ export default function OpportunitiesTab({ city, setCity }) {
           {Object.values(liveStatus.status || {}).join(' · ')}</p>
       )}
       {active && <p className="scenario-desc">{active.description}</p>}
+      <AddListingPanel onSaved={() => { setSource('manual') }} />
       <AreasPanel city={city} />
       {scenario === 'returning_resident' && yearsAbroad < 6 && (
         <p className="warning">With {yearsAbroad} years abroad you are NOT eligible for the
@@ -158,6 +160,8 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
   const [compare, setCompare] = useState(null)
   const [proj, setProj] = useState(null)
   const [memo, setMemo] = useState(null)
+  const [timingData, setTimingData] = useState(null)
+  const [mc, setMc] = useState(null)
   const [dealMsg, setDealMsg] = useState(null)
   const f = listing.financials
   const sl = listing.financials_short_let
@@ -177,6 +181,14 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
   const startDeal = async () => {
     const d = await createDeal(listing.id)
     setDealMsg(`Deal #${d.id} started — open the Acquire tab to track it.`)
+  }
+  const toggleTiming = async () => {
+    if (timingData) { setTimingData(null); return }
+    setTimingData(await fetchTiming(listing.id))
+  }
+  const toggleMc = async () => {
+    if (mc) { setMc(null); return }
+    setMc(await fetchMonteCarlo(listing.id))
   }
 
   return (
@@ -284,11 +296,15 @@ function ListingCard({ listing, marginalRate, yearsAbroad, financing }) {
       <div className="card-actions">
         <button className="compare-btn" onClick={toggleProj}>{proj ? 'Hide projection' : '10-yr projection'}</button>
         <button className="compare-btn" onClick={toggleCompare}>{compare ? 'Hide scenarios' : 'Tax scenarios'}</button>
+        <button className="compare-btn" onClick={toggleTiming}>{timingData ? 'Hide timing' : 'Timing'}</button>
+        <button className="compare-btn" onClick={toggleMc}>{mc ? 'Hide risk' : 'Risk'}</button>
         <button className="compare-btn" onClick={toggleMemo}>{memo ? 'Hide memo' : 'Memo'}</button>
         <button className="compare-btn" onClick={startDeal}>Start deal</button>
       </div>
       {dealMsg && <p className="note">{dealMsg}</p>}
       {proj && <ProjectionPanel proj={proj} />}
+      {timingData && <TimingPanel data={timingData} />}
+      {mc && <RiskPanel mc={mc} />}
       {compare && <ScenarioCompare data={compare} />}
       {memo && <pre className="memo">{memo}</pre>}
     </article>
@@ -358,6 +374,76 @@ function ProjectionPanel({ proj }) {
           local CGT {eur(proj.exit.local_cgt)}, Israeli CGT {eur(proj.exit.israeli_cgt)},
           net proceeds {eur(proj.exit.net_sale_proceeds)}. {proj.exit.note}</p>
       </details>
+    </div>
+  )
+}
+
+function TimingPanel({ data }) {
+  const mb = data.move_back
+  const ex = data.exit
+  return (
+    <div className="projection">
+      <h4>Move-back timing</h4>
+      {mb.six_year_cliff_note && <p className="warning">{mb.six_year_cliff_note}</p>}
+      <p className="note">
+        Current plan (return yr {mb.current_plan.move_back_year ?? 'never'},
+        {' '}{mb.current_plan.exemption}): {eur(mb.current_plan.total_after_tax_profit)} profit.
+        Best: return yr {mb.best_plan.move_back_year} ({mb.best_plan.exemption}) —
+        {' '}{eur(mb.best_plan.total_after_tax_profit)}.
+        {mb.improvement_eur > 0 && <strong> Delta {eur(mb.improvement_eur)} (~₪{Number(mb.improvement_ils).toLocaleString()}).</strong>}
+      </p>
+      <details>
+        <summary>Profit by move-back year</summary>
+        <table className="compare">
+          <thead><tr><th>Return yr</th><th>Yrs abroad</th><th>Exemption</th><th>IRR</th><th>Profit</th></tr></thead>
+          <tbody>
+            {mb.rows.map((r) => (
+              <tr key={String(r.move_back_year)}>
+                <td>{r.move_back_year ?? 'never'}</td><td>{r.years_abroad_at_return ?? '—'}</td>
+                <td>{r.exemption}</td><td>{r.irr_pct}%</td><td>{eur(r.total_after_tax_profit)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+      <h4>Exit timing</h4>
+      <p className="note">Best IRR selling in <strong>year {ex.best_irr.sale_year}</strong> ({ex.best_irr.irr_pct}%);
+        max profit in year {ex.best_profit.sale_year} ({eur(ex.best_profit.total_after_tax_profit)}).
+        {ex.notes.map((n) => ` ${n}`)}</p>
+      <details>
+        <summary>IRR by sale year</summary>
+        <table className="compare">
+          <thead><tr><th>Sale yr</th><th>IRR</th><th>Profit</th><th>Local CGT</th><th>IL CGT</th></tr></thead>
+          <tbody>
+            {ex.rows.map((r) => (
+              <tr key={r.sale_year}>
+                <td>{r.sale_year}</td><td>{r.irr_pct}%</td>
+                <td>{eur(r.total_after_tax_profit)}</td>
+                <td>{eur(r.local_cgt)}</td><td>{eur(r.israeli_cgt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+    </div>
+  )
+}
+
+function RiskPanel({ mc }) {
+  return (
+    <div className="projection">
+      <h4>Monte Carlo risk bands ({mc.draws} draws)</h4>
+      <div className="fin-grid">
+        <Stat label="IRR P10 (bad case)" value={`${mc.irr.p10}%`} />
+        <Stat label="IRR P50" value={`${mc.irr.p50}%`} strong />
+        <Stat label="IRR P90 (good case)" value={`${mc.irr.p90}%`} />
+        <Stat label="P(negative cash flow)" value={`${mc.prob_negative_cash_flow_pct}%`} />
+        <Stat label="Profit P10" value={eur(mc.profit.p10)} />
+        <Stat label="Profit P50" value={eur(mc.profit.p50)} strong />
+        <Stat label="Profit P90" value={eur(mc.profit.p90)} />
+        <Stat label="P(overall loss)" value={`${mc.prob_loss_pct}%`} />
+      </div>
+      <p className="note">Perturbed per draw: {mc.assumption_ranges}.</p>
     </div>
   )
 }

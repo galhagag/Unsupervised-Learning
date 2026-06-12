@@ -139,11 +139,11 @@ def parse_number(v) -> float | None:
     if isinstance(v, (int, float)):
         return float(v)
     s = re.sub(r"m²|m2|кв\.?\s?м|sq\.?\s?m|sqm", "", str(v), flags=re.I)
-    s = s.replace(" ", " ").strip()
-    if re.fullmatch(r"\d{1,3}([ .]\d{3})+", s):    # 139 000 / 139.000
-        s = s.replace(" ", "").replace(".", "")
+    s = s.replace(" ", " ").strip().strip(".,")
+    if re.fullmatch(r"\d{1,3}([ .,]\d{3})+", s):   # 139 000 / 139.000 / 152,000
+        s = re.sub(r"[ .,]", "", s)
     else:
-        s = s.split()[0] if s.split() else ""
+        s = s.split()[0].strip(".,") if s.split() else ""
         if "," in s and "." in s:                  # 1.250,50 -> 1250.50
             s = s.replace(".", "").replace(",", ".")
         elif "," in s:

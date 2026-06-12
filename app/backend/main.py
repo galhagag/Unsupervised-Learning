@@ -13,6 +13,7 @@ from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+import extractor
 import history
 import insights
 import projection
@@ -21,6 +22,7 @@ import scoring
 import scrapers
 import store
 import tax_engine
+import timing
 
 DATA_DIR = Path(__file__).parent / "data"
 LISTINGS = json.loads((DATA_DIR / "listings.json").read_text())
@@ -48,10 +50,11 @@ def _all_listings(source: str) -> list:
         "sample": LISTINGS,
         "researched": RESEARCHED,
         "live": _live()["listings"],
+        "manual": extractor.load_manual(),
     }
     if source in pools:        # empty pool is a valid answer, not a fallthrough
         return pools[source]
-    return LISTINGS + RESEARCHED + _live()["listings"]
+    return LISTINGS + RESEARCHED + _live()["listings"] + extractor.load_manual()
 
 CITIES = ["Sofia", "Sicily", "Athens"]
 
@@ -118,7 +121,7 @@ def opportunities(city: str | None = Query(None),
                   ltv: float = Query(0.0, ge=0.0, le=0.8),
                   mortgage_rate: float = Query(0.045, ge=0.005, le=0.15),
                   mortgage_term_years: int = Query(20, ge=5, le=35),
-                  source: str = Query("all", pattern="^(all|sample|researched|live)$"),
+                  source: str = Query("all", pattern="^(all|sample|researched|live|manual)$"),
                   include_closed: bool = Query(False),
                   sort: str = Query("after_tax_yield")):
     """Listings ranked by after-tax yield under the chosen tax scenario.
@@ -319,7 +322,7 @@ def listing_projection(listing_id: str,
 
 @app.get("/api/recommendation")
 def recommendation(city: str | None = Query(None),
-                   source: str = Query("all", pattern="^(all|sample|researched|live)$")):
+                   source: str = Query("all", pattern="^(all|sample|researched|live|manual)$")):
     """Best-pick recommendation across the pool using the saved profile."""
     closed = history.closed_ids()
     pool = [l for l in _all_listings(source) if l["id"] not in closed
@@ -385,6 +388,56 @@ def _render_memo(listing, sc, proj, comps, prof) -> str:
     lines.append("\n---\n*Decision-support modelling, not investment or tax "
                  "advice. Confirm with your lawyer and an Israeli CPA.*")
     return "\n".join(lines)
+
+
+# ---- Smarter decisions: timing planner, exit optimizer, Monte Carlo ------
+
+@app.get("/api/opportunities/{listing_id}/timing")
+def listing_timing(listing_id: str):
+    """Move-back timing planner + exit-year optimizer for one listing."""
+    listing = _listing_by_id(listing_id)
+    if not listing:
+        raise HTTPException(404, f"No listing '{listing_id}'.")
+    prof = store.get_profile()
+    return {"move_back": timing.move_back_planner(listing, prof),
+            "exit": timing.exit_optimizer(listing, prof)}
+
+
+@app.get("/api/opportunities/{listing_id}/montecarlo")
+def listing_montecarlo(listing_id: str,
+                       draws: int = Query(300, ge=50, le=2000)):
+    """Monte Carlo IRR risk bands for one listing."""
+    listing = _listing_by_id(listing_id)
+    if not listing:
+        raise HTTPException(404, f"No listing '{listing_id}'.")
+    return timing.monte_carlo(listing, store.get_profile(), draws)
+
+
+# ---- Easier data in: paste-any-listing extraction -------------------------
+
+@app.post("/api/listings/extract")
+def extract_listing(body: dict = Body(...)):
+    """Extract a structured listing from pasted text (any language).
+    body: {text, city, save: bool}. Uses Claude when ANTHROPIC_API_KEY is
+    set, regex heuristics otherwise. save=true persists it to the 'manual'
+    source and the history DB."""
+    try:
+        listing = extractor.extract(body.get("text", ""), body.get("city", ""))
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+    sc = scoring.score(listing)
+    if body.get("save"):
+        extractor.save_manual(listing)
+        history.sync([listing], {listing["id"]: sc})
+    return {"saved": bool(body.get("save")), "listing": listing, "score": sc,
+            "llm_used": "llm" in listing["extraction_method"]}
+
+
+@app.delete("/api/listings/manual/{listing_id}")
+def delete_manual_listing(listing_id: str):
+    if not extractor.delete_manual(listing_id):
+        raise HTTPException(404, f"No manual listing '{listing_id}'.")
+    return {"deleted": listing_id}
 
 
 # ---- Phase 2: acquisition playbooks & deal tracker -----------------------

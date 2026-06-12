@@ -43,7 +43,8 @@ def _scenario_for_year(year: int, p: ProfileAssumptions) -> str:
     if p.move_back_year is None or year < p.move_back_year:
         return "abroad"
     years_back = year - p.move_back_year                 # 0 in the move-back year
-    total_years_abroad = p.years_abroad_at_purchase      # at the moment of return
+    # Years abroad keep accruing between purchase and the return.
+    total_years_abroad = p.years_abroad_at_purchase + p.move_back_year
     if total_years_abroad >= 6:
         window = 10 if total_years_abroad >= 10 else 5
         if years_back < window:
@@ -185,10 +186,12 @@ def project(listing: dict, profile: ProfileAssumptions) -> dict:
 def _milestones(listing, country, p: ProfileAssumptions) -> list:
     out = []
     if p.move_back_year:
+        years_abroad_at_return = p.years_abroad_at_purchase + p.move_back_year
         out.append(f"Year {p.move_back_year}: you re-become an Israeli tax "
-                   f"resident — worldwide income taxable from here.")
-        if p.years_abroad_at_purchase >= 6:
-            window = 10 if p.years_abroad_at_purchase >= 10 else 5
+                   f"resident — worldwide income taxable from here "
+                   f"({years_abroad_at_return} years abroad at return).")
+        if years_abroad_at_return >= 6:
+            window = 10 if years_abroad_at_return >= 10 else 5
             out.append(f"Years {p.move_back_year}-{p.move_back_year + window - 1}: "
                        f"returning-resident exemption — foreign income exempt.")
         else:
